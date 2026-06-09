@@ -91,5 +91,14 @@ docs/goals.md.
   recovery and an MCMC posterior ridge (Phase 3), and AIC/BIC discrimination (Phase 4). These are
   exploratory and partly need backward verification (noise-draw replication for the borderline
   discrimination cells; M3 MCMC; a feedback-strength sweep).
-- Next: replicate the borderline discrimination results over noise draws, add an optimal-measurement
-  metric, and tighten the practical claims.
+- Fitting bottleneck fixed: a bounded least-squares fitter (`fit_least_squares`) made large sweeps
+  feasible. The borderline discrimination cells were replicated over noise draws (28 tests passing);
+  the replication corrected a single-run overstatement (protein-only distinguishes M1 from M3 in 88% of
+  draws, not the one-shot tie reported earlier). The M3 protein-only MCMC is diffusion-limited and
+  reported preliminary; the converged M1 MCMC is the quantitative ridge anchor.
+- Real data acquired: the Frohlich et al. 2018 single-cell GFP translation dataset (Zenodo), loaded and
+  visualized (`experiments/05_real_data`). It is the protein-observed / mRNA-latent identifiability
+  question on real data, with a published benchmark (Pieschner et al. 2022) to check against.
+- Next: implement the translation model and fit it to the real data, then run identifiability on the
+  real fit and compare to the published degeneracy. Stretch: a discriminability map (feedback strength
+  x noise) now that fitting is fast.
