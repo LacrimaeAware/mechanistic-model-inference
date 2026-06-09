@@ -1,0 +1,7 @@
+numpy
+scipy
+matplotlib
+pandas
+# later phases (Bayesian inference and posterior diagnostics)
+emcee
+arviz

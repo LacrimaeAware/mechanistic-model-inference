@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# Data and generated outputs (not committed)
+/data/raw/*
+!/data/raw/.gitkeep
+/results/*
+!/results/.gitkeep
+*.h5ad
+
+# OS and editor
+.DS_Store
+Thumbs.db
+
+# Stray fetch artifacts
+_src.pdf
+_src.xml
