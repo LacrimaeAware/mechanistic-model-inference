@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Identifiability and inference for gene-autoregulation models</title>
+<meta name="description" content="Given noisy measurements of a small gene-autoregulation model, which parameters can be recovered, and can the regulatory mechanism be identified? Protein alone is not enough; mRNA is.">
+<style>
+  :root { --ink:#1a1d21; --muted:#5b6470; --line:#e3e7ec; --accent:#c2563d; --teal:#2e8b8b; --bg:#fbfbf9; --card:#ffffff; }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:17px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:820px; margin:0 auto; padding:0 22px 96px; }
+  header { padding:64px 0 28px; border-bottom:1px solid var(--line); }
+  h1 { font-size:30px; line-height:1.25; margin:0 0 10px; letter-spacing:-0.01em; }
+  .sub { color:var(--muted); font-size:18px; margin:0; }
+  .repo { margin-top:18px; font-size:15px; }
+  .repo a { color:var(--teal); text-decoration:none; border-bottom:1px solid #bfe0e0; }
+  .repo a:hover { border-bottom-color:var(--teal); }
+  h2 { font-size:22px; margin:48px 0 6px; letter-spacing:-0.01em; }
+  h3 { font-size:18px; margin:30px 0 4px; }
+  p { margin:12px 0; }
+  .lede { font-size:18.5px; }
+  .muted { color:var(--muted); }
+  .tag { display:inline-block; font-size:12px; font-weight:600; letter-spacing:.03em;
+    text-transform:uppercase; padding:2px 9px; border-radius:99px; vertical-align:middle; }
+  .tag.verified { background:#e6f2ec; color:#1f7a4d; }
+  .tag.partial { background:#fdf1e3; color:#9a5a18; }
+  .tag.neg { background:#f1f0f2; color:#5b6470; }
+  figure { margin:22px 0 8px; padding:14px; background:var(--card); border:1px solid var(--line);
+    border-radius:10px; }
+  figure img { width:100%; height:auto; display:block; border-radius:4px; }
+  figcaption { font-size:14px; color:var(--muted); margin-top:10px; }
+  .finding { padding:22px 0 6px; border-top:1px solid var(--line); }
+  .finding:first-of-type { border-top:none; }
+  .k { display:inline-block; min-width:1.6em; color:var(--accent); font-weight:700;
+    font-variant-numeric:tabular-nums; }
+  table { width:100%; border-collapse:collapse; margin:18px 0; font-size:14.5px; }
+  th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.03em; }
+  td.exp { font-variant-numeric:tabular-nums; color:var(--muted); white-space:nowrap; }
+  ul { margin:12px 0; padding-left:22px; }
+  li { margin:7px 0; }
+  code { background:#f1f0ee; padding:1px 5px; border-radius:4px; font-size:14px; }
+  .callout { background:var(--card); border:1px solid var(--line); border-left:3px solid var(--accent);
+    border-radius:8px; padding:14px 18px; margin:20px 0; }
+  footer { margin-top:56px; padding-top:22px; border-top:1px solid var(--line);
+    font-size:14.5px; color:var(--muted); }
+  footer a { color:var(--teal); text-decoration:none; }
+  footer a:hover { text-decoration:underline; }
+  .toc { font-size:14.5px; color:var(--muted); margin:18px 0 0; }
+  .toc a { color:var(--teal); text-decoration:none; }
+  .toc a:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Identifiability and inference for gene-autoregulation models</h1>
+  <p class="sub">Given noisy measurements of a small gene-feedback model, which parameters can be recovered, and can the regulatory mechanism be told apart? Protein alone is not enough; mRNA is.</p>
+  <p class="repo">Repository: <a href="https://github.com/LacrimaeAware/mechanistic-model-inference">github.com/LacrimaeAware/mechanistic-model-inference</a> &middot; 9 experiments &middot; 29 tests</p>
+</header>
+
+<section id="plain">
+  <h2>In plain terms</h2>
+  <p class="lede">A mechanistic model is a set of equations for how a gene's messenger RNA (mRNA) and protein change over time, including feedback where the protein slows its own production. A published paper builds three such models &mdash; no feedback, the protein represses its own <em>transcription</em>, or the protein represses its own <em>translation</em> &mdash; and compares how they behave. This project asks the statistical question the paper does not: given only noisy measurements, which numbers in the equations can you actually recover, and can you tell the two feedback mechanisms apart?</p>
+  <p>The short version, in three parts:</p>
+  <ul>
+    <li>From <strong>protein measurements alone you cannot separate the transcription rate from the translation rate</strong> &mdash; only their product is recoverable. This is structural: no amount of protein data, and no fancier fitting method, fixes it, because the information is not there.</li>
+    <li><strong>Measuring mRNA fixes it</strong>, and a single well-timed mRNA measurement is enough; dense protein sampling cannot substitute.</li>
+    <li>The two feedback <strong>mechanisms are indistinguishable from protein</strong>, and only <em>asymmetrically</em> distinguishable from mRNA: transcriptional feedback is easy to detect (only it changes the mRNA), but translational feedback is hard to confirm even with mRNA.</li>
+  </ul>
+  <div class="callout">
+    Honest scope: the identifiability facts here are established prior art &mdash; we confirmed them for these specific models with standard methods and a hand proof. The mechanism-discrimination answer is the one genuinely open piece. This is a modest, correct analysis plus a real-data parameter recovery, not a high-impact result, and it does not claim to be.
+  </div>
+  <p class="toc">Jump to: <a href="#findings">Findings</a> &middot; <a href="#status">What is solid</a> &middot; <a href="#lit">In the literature</a> &middot; <a href="#negative">What did not pan out</a> &middot; <a href="#lessons">Lessons</a> &middot; <a href="#log">Experiment log</a></p>
+</section>
+
+<section id="findings">
+  <h2>Four findings</h2>
+
+  <div class="finding">
+    <h3><span class="k">1.</span> Protein alone cannot separate the transcription and translation rates <span class="tag verified">verified</span></h3>
+    <p>From a protein-only time course, the transcription rate and the translation rate are not separately recoverable &mdash; only their product is. This is shown three independent ways that agree: an analytic scaling-symmetry proof (rescaling one rate up and the other down leaves the protein trajectory identical), the Fisher information rank (3 of 4 with no feedback, 4 of 5 with feedback; the single missing direction is exactly the rate product), and maximum-likelihood fitting (the product is recovered to 0.03 log units, the individual split is not). The regulation strength is identifiable in principle, but only marginally from protein at realistic noise. This is established prior art for this model class, confirmed here for these specific models.</p>
+    <figure>
+      <img src="figures/fig05_posterior_ridge.png" alt="Two scatter plots: protein-only posterior is a long diagonal ridge; with mRNA it is a tight round blob.">
+      <figcaption>The degeneracy drawn as a Bayesian posterior. Samples of the transcription rate (log k_m) vs the translation rate (log k_p): from protein-only data (left) the posterior is a long diagonal valley (correlation &minus;0.94) &mdash; the data pin the product but not the split. Observing mRNA (right) collapses it to a tight blob.</figcaption>
+    </figure>
+  </div>
+
+  <div class="finding">
+    <h3><span class="k">2.</span> Measuring mRNA restores identifiability, and one timepoint is enough <span class="tag verified">verified</span></h3>
+    <p>Because the protein-only deficiency is structural, no number of protein timepoints removes it &mdash; you cannot sample your way out. A single informative mRNA measurement restores full identifiability (the deficiency is rank one), after which every parameter has a finite, modest standard error (about 0.02 to 0.16 in log units). This is a deterministic Fisher-information result, so it does not depend on a noise draw. The practical advice: do not spend the experimental budget on more protein timepoints expecting to break the degeneracy; measure mRNA at least once.</p>
+  </div>
+
+  <div class="finding">
+    <h3><span class="k">3.</span> The two mechanisms are indistinguishable from protein; with mRNA, asymmetrically <span class="tag verified">verified</span></h3>
+    <p>Can you tell transcriptional from translational autoregulation from data? Measured deterministically &mdash; how small a residual the wrong mechanism leaves when it does its best to reproduce the right one's noise-free output &mdash; the answer is stable. From protein, the best mimic leaves only 0.03 to 0.06% of the signal, far below realistic measurement noise (1 to 10%), at every feedback strength: indistinguishable. With mRNA the picture is asymmetric: transcriptional autoregulation is clearly detectable (the translational model cannot reproduce its mRNA, a 7 to 8% residual), but translational autoregulation is only marginally distinguishable (the transcriptional model mimics it to 0.6 to 2%, near the noise floor), easing as feedback strengthens. This is the open question the source paper raised but never analyzed.</p>
+    <figure>
+      <img src="figures/fig13_structural_distinguishability.png" alt="Log-scale plot: protein-only mimic residual stays near 0.05%; mRNA+protein residual sits near the 1-3% noise lines.">
+      <figcaption>How distinguishable the mechanisms are, by channel and feedback strength. The curve is how well the wrong mechanism can mimic the right one (residual, percent of peak, log scale). Protein-only (blue) stays near 0.05%, far below the dotted noise lines (1, 3, 10%) &mdash; indistinguishable. mRNA+protein (orange) rises into the noise band.</figcaption>
+    </figure>
+  </div>
+
+  <div class="finding">
+    <h3><span class="k">4.</span> On real single-cell data, the pipeline recovers the published degeneracy and real parameters <span class="tag partial">provisional</span></h3>
+    <p>Pointed at the real Fröhlich et&nbsp;al. (2018) single-cell GFP dataset (mRNA injected into cells, protein filmed for 30&nbsp;h), the model fits the mean trace to 1.4% of peak, and the Fisher rank independently recovers the <em>published</em> structural non-identifiability (the amplitude is a product of three factors; rank 5 of 7). Fitting cell by cell recovers the kinetic parameters of 200 real cells: a fast and a slow timescale (half-lives about 3.8&nbsp;h and 30&nbsp;h), with roughly threefold cell-to-cell variation in how much protein each cell makes. This is a first pass, not independently re-verified.</p>
+    <figure>
+      <img src="figures/fig09_translation_fit.png" alt="Model fit (red) tracking the real mean GFP curve (black points) over 30 hours.">
+      <figcaption>The translation model (red) fit to the mean GFP trace of 1079 real cells, to 1.4% of peak. The small early mismatch is the model's sharp onset versus the smooth real rise.</figcaption>
+    </figure>
+    <figure>
+      <img src="figures/fig11_single_cell_params.png" alt="Four histograms of recovered amplitude, fast rate, slow rate, and onset time across 200 cells.">
+      <figcaption>Parameters recovered cell-by-cell for 200 real cells: the expression amplitude, the two decay rates, and the onset delay, each with its population spread.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="status">
+  <h2>What is solid, provisional, and retracted</h2>
+  <p class="muted">Stated honestly, because the project's main lesson is about not over-trusting unstable measurements.</p>
+  <ul>
+    <li><strong>Solid</strong> (analytic, deterministic, or tested) <span class="tag verified">verified</span>: the model reproduction; the identifiability core, which rests on a proof rather than only the numerical method; the experimental-design result; and the deterministic mechanism distinguishability. 29 tests pass.</li>
+    <li><strong>Provisional</strong> (a first pass, re-verification owed) <span class="tag partial">provisional</span>: the real-data fits, and any number that depends on the multi-start fit reaching the global optimum.</li>
+    <li><strong>Retracted</strong> <span class="tag neg">retracted</span>: the Monte-Carlo &ldquo;discrimination selection rates.&rdquo; They compared two models that fit protein data near-identically, so the winner was decided by sub-noise wobble and swung between runs. Replaced by the deterministic statement in finding&nbsp;3. This is the project's main methodological lesson.</li>
+  </ul>
+</section>
+
+<section id="lit">
+  <h2>Where this sits in the literature</h2>
+  <p>A verified literature review places the work honestly. The protein-only rate-product non-identifiability, and its resolution by observing mRNA, is <strong>textbook prior art</strong> for this model class (Pieschner, Hasenauer &amp; Fuchs 2022; Fröhlich 2018; Villaverde 2019), and our methods (profile likelihood, Fisher information, MCMC) are the standard ones (Raue 2009). The source paper (Ryzowicz &amp; Yildirim 2023) builds the three models but performs <strong>no identifiability analysis, no model discrimination, and no data fitting</strong> &mdash; so the mechanism-discrimination question (finding&nbsp;3) is the genuinely open, non-tautological piece.</p>
+</section>
+
+<section id="negative">
+  <h2>What did not pan out, and is not re-attempted</h2>
+  <ul>
+    <li><strong>Model discrimination via AIC selection rates</strong>: unstable on near-tied models; retracted for the deterministic distinguishability.</li>
+    <li><strong>MCMC for the regulated model</strong>: the flat non-identifiable ridge is diffusion-limited and the sampler did not converge; the simpler, converged posterior is the demonstration instead.</li>
+    <li><strong>Real Hes1 autoregulation data</strong>: the traces are noisy, decay from a high start, and need a delayed model with a stochastic noise treatment; the project's non-delay models do not fit them, so no fit was forced. Recorded as an honest stop, not a result.</li>
+  </ul>
+</section>
+
+<section id="lessons">
+  <h2>Lessons</h2>
+  <ul>
+    <li>Do not apply a noisy statistic to a near-degenerate problem and read its fluctuations as results. When a number swings between runs, suspect the measurement, not the sampling.</li>
+    <li>Identifiability is a property of the data and the model, not of the method: if a parameter is non-identifiable, no optimizer, neural network, or Bayesian method can recover it.</li>
+    <li>Prefer deterministic or structural checks over Monte-Carlo rates where possible; they cannot flip-flop.</li>
+    <li>A result is provisional until re-derived by a different route. Passing one's own checks is not certification.</li>
+  </ul>
+</section>
+
+<section id="log">
+  <h2>Experiment log</h2>
+  <table>
+    <thead><tr><th>#</th><th>Experiment</th><th>Result</th></tr></thead>
+    <tbody>
+      <tr><td class="exp">01</td><td>reproduce the models</td><td>oscillation only in the transcriptional model; faster response under feedback; noise M2 &gt; M1 &gt; M3 (matches the paper)</td></tr>
+      <tr><td class="exp">02</td><td>identifiability</td><td>protein-only cannot separate the rates (rank 3/4, 4/5; null = product); mRNA restores full rank; regulation strength marginal from protein</td></tr>
+      <tr><td class="exp">03</td><td>inference</td><td>protein-only recovers the product not the split; the posterior is a ridge that mRNA closes; the regulated-model MCMC did not converge</td></tr>
+      <tr><td class="exp">04, 06</td><td>discrimination via AIC</td><td>retracted: unstable on near-tied models</td></tr>
+      <tr><td class="exp">05</td><td>real data</td><td>recovers the published degeneracy (rank 5/7); 200 single cells fit (half-lives ~3.8 h / ~30 h); provisional</td></tr>
+      <tr><td class="exp">07</td><td>experimental design</td><td>protein-only rank-deficient for any protein sampling; one informative mRNA timepoint restores full rank</td></tr>
+      <tr><td class="exp">08</td><td>Hes1 real autoregulation</td><td>honest stop: noisy, needs a delayed and stochastic model the project does not have</td></tr>
+      <tr><td class="exp">09</td><td>structural distinguishability</td><td>indistinguishable from protein (0.03&ndash;0.06%); with mRNA, transcriptional clear (7&ndash;8%), translational marginal (0.6&ndash;2%)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  <p>Full write-ups and numbers live in the repository:</p>
+  <p>
+    <a href="https://github.com/LacrimaeAware/mechanistic-model-inference/blob/main/docs/summary.md">The cohesive story</a> &middot;
+    <a href="https://github.com/LacrimaeAware/mechanistic-model-inference/blob/main/docs/methodology_review.md">Methodology review</a> &middot;
+    <a href="https://github.com/LacrimaeAware/mechanistic-model-inference/blob/main/docs/literature_research.md">Literature and novelty verdict</a> &middot;
+    <a href="https://github.com/LacrimaeAware/mechanistic-model-inference/blob/main/docs/verification_debt.md">Verification status</a>
+  </p>
+  <p>Each <code>experiments/NN_*/</code> directory contains a write-up, the script that produced it, and the numbers.</p>
+</footer>
+
+</div>
+</body>
+</html>
