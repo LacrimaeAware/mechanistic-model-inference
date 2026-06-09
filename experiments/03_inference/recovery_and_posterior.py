@@ -107,17 +107,23 @@ def part_b_posterior():
         rng = np.random.default_rng(0)
         clean = sim_norm(true, T)
         data = clean[:, list(ch)].ravel() + rng.normal(scale=sigma, size=len(ch) * T.size)
-        nwalkers, ndim = 32, 4
+        nwalkers, ndim, nsteps, burn = 32, 4, 16000, 5000
         p0 = true + 1e-2 * rng.normal(size=(nwalkers, ndim))
         sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob, args=(data, ch))
-        sampler.run_mcmc(p0, 4000, progress=False)
-        s = sampler.get_chain(discard=1000, thin=10, flat=True)
+        sampler.run_mcmc(p0, nsteps, progress=False)
+        s = sampler.get_chain(discard=burn, thin=10, flat=True)
         corr = np.corrcoef(s[:, 0], s[:, 2])[0, 1]
         spread_sum = np.std(s[:, 0] + s[:, 2])   # along the product direction
         spread_diff = np.std(s[:, 0] - s[:, 2])  # along the ridge direction
+        try:
+            tau = float(np.mean(sampler.get_autocorr_time(tol=0)))
+        except Exception:
+            tau = float("nan")
+        ess = (nsteps - burn) / tau if tau == tau else float("nan")
+        conv = "converged" if ess > 50 else "under-converged"
         record(f"  {lbl:12s}: corr(log k_m, log k_p) = {corr:+.2f}; "
                f"std(sum)={spread_sum:.3f}, std(diff)={spread_diff:.3f}, "
-               f"ratio diff/sum={spread_diff / spread_sum:.1f}")
+               f"ratio diff/sum={spread_diff / spread_sum:.1f}; steps/tau={ess:.0f} ({conv})")
         ax.scatter(s[:, 0] - true[0], s[:, 2] - true[2], s=4, alpha=0.2)
         ax.set_xlabel(r"$\log k_m$ offset"); ax.set_ylabel(r"$\log k_p$ offset")
         ax.set_title(f"{lbl}  (corr={corr:+.2f})")
