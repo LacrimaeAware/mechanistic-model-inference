@@ -47,11 +47,11 @@ result, and it does not claim to be.
 
 3. **The two regulatory mechanisms are indistinguishable from protein; with mRNA, distinguishability is
    asymmetric.** Measured deterministically (how well the wrong mechanism mimics the right one's
-   noise-free output): from protein, the best mimic leaves a residual of only 0.03–0.06% of the signal,
+   noise-free output): from protein, the best mimic leaves a residual of only 0.02–0.06% of the signal,
    far below realistic noise (1–10%), at every feedback strength. With mRNA, transcriptional
-   autoregulation is clearly detectable (the translational model cannot reproduce its mRNA — 7–8%
+   autoregulation is clearly detectable (the translational model cannot reproduce its mRNA — 6.7–8.5%
    residual), but translational autoregulation is only marginally distinguishable (the transcriptional
-   model mimics it to 0.6–2%, near the noise floor), easing as feedback strengthens. This is the open
+   model mimics it to 0.6–2.1%, near the noise floor), easing as feedback strengthens. This is the open
    question the source paper raised but never analyzed. [experiment 09]
 
 4. **On real single-cell data, the pipeline recovers the published degeneracy and real parameters.**
@@ -115,13 +115,13 @@ A verified literature review ([`docs/literature_research.md`](docs/literature_re
 |----|---|---|---|
 | 01 | reproduce the models | ODE/SSA simulation vs the paper | oscillation only in the transcriptional model; faster response under feedback; stochastic noise M2 > M1 > M3 (matches the paper); M1 matches its closed form to 3e-8 |
 | 02 | identifiability | Fisher rank + profile likelihood + analytic proof | protein-only cannot separate k_m, k_p (rank 3/4, 4/5; null = product); mRNA restores full rank; regulation strength marginal from protein (5–6/10 draws) |
-| 03 | inference | MLE recovery + MCMC | protein-only recovers the product not the split; M1 posterior is a ridge (corr −0.94) that mRNA closes; M3 MCMC under-converged |
+| 03 | inference | MLE recovery + MCMC | protein-only recovers the product not the split; M1 posterior is a ridge (corr −0.93) that mRNA closes; M3 MCMC under-converged |
 | 04 | discrimination (AIC) | AIC selection rate | RETRACTED: unstable on near-tied models |
 | 05 | real data | fit translation model to Fröhlich 2018 | recovers the published amplitude degeneracy (rank 5/7); 200 single cells fit (half-lives ~3.8 h / ~30 h); provisional |
 | 06 | discriminability map (AIC) | AIC rate over feedback × channel | RETRACTED: protein-only rates non-reproducible (sub-noise) |
 | 07 | experimental design | deterministic Fisher | protein-only structurally rank-deficient for any protein sampling; one informative mRNA timepoint restores full rank |
 | 08 | Hes1 real autoregulation | characterize real Hes1 data | honest stop: noisy, needs a delayed + stochastic model the project does not have |
-| 09 | structural distinguishability | deterministic mutual-fit residual vs noise | mechanisms indistinguishable from protein (0.03–0.06%); with mRNA, transcriptional clear (7–8%), translational marginal (0.6–2%) |
+| 09 | structural distinguishability | deterministic mutual-fit residual vs noise | mechanisms indistinguishable from protein (0.02–0.06%); with mRNA, transcriptional clear (6.7–8.5%), translational marginal (0.6–2.1%) |
 
 ## Reproduce
 

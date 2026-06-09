@@ -52,7 +52,7 @@ the *practical* identifiability of the regulation strength from protein is reali
 part).
 
 **03 inference.** Correctness: MLE recovery and the MCMC are computed correctly; the M1 posterior ridge
-(correlation -0.94) reproduces the degeneracy. Design: the recovery agrees with experiment 02, a
+(correlation -0.93) reproduces the degeneracy. Design: the recovery agrees with experiment 02, a
 consistency check across methods. Flaw/caveat: the regulated-model (M3) MCMC does not converge on the
 flat ridge (steps / autocorrelation time below threshold) and is reported as preliminary, not used for a
 claim. Status: **sound for M1; the M3 posterior is an acknowledged gap**, consistent with the literature

@@ -95,7 +95,7 @@ draws for M3 kappa_P, 5/10 for M2 kappa_M), and both are clearly identifiable wi
 
 - Phase 3 (`experiments/03_inference`): recovery on M3 (both channels recover all parameters;
   protein-only recovers the k_m k_p product but not the split) and MCMC posteriors. M1 MCMC is verified
-  converged (steps/tau = 138) and shows the protein-only ridge (corr -0.94) that mRNA closes: a fourth
+  converged (steps/tau = 138) and shows the protein-only ridge (corr -0.93) that mRNA closes: a fourth
   route to the degeneracy. M3 MCMC does NOT fully converge for protein-only (the flat ridge is
   diffusion-limited; see inference.md for the approaches tried and why each failed), so it is reported
   preliminary with M1 as the anchor.

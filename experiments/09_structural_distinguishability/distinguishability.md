@@ -34,10 +34,10 @@ Best wrong-mechanism mimic residual (% of peak); "min" is the harder-to-distingu
 | mRNA+protein  | 10      | 1.933%       | 6.808%       | 1.933%|
 | mRNA+protein  | 5       | 2.084%       | 6.685%       | 2.084%|
 
-- Protein-only: the best mimic residual is 0.03-0.06% of peak at every feedback strength, far below any
+- Protein-only: the best mimic residual is 0.02-0.06% of peak at every feedback strength, far below any
   realistic noise (1-10%). The mechanisms are structurally indistinguishable from protein.
 - mRNA+protein: asymmetric. M3 cannot mimic M2 (residual 6.7-8.5%, well above noise), so transcriptional
-  autoregulation is clearly detectable with mRNA - only M2 regulates mRNA. But M2 CAN mimic M3 to 0.6-2%
+  autoregulation is clearly detectable with mRNA - only M2 regulates mRNA. But M2 CAN mimic M3 to 0.6-2.1%
   (the "min" column), so translational autoregulation is only marginally distinguishable even with mRNA,
   near the noise floor; it becomes easier as feedback strengthens (0.6% at 1/kappa=200 to 2.1% at 5).
 
