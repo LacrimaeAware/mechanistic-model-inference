@@ -73,10 +73,28 @@ identifiability was checked, not profile likelihood (practical) or the published
 noise model; and none of this has had an independent re-verification pass. Treat every number as a first
 pass that can contain errors of the kind found elsewhere in this project.
 
+## Single-cell parameter recovery (the concrete fit-data-get-parameters result)
+
+`experiments/05_real_data/fit_single_cells.py` fits the closed-form translation model to a sample of 200
+real single-cell GFP traces (analytic model, so all 200 in ~8 s). All 200 fit well (RMS < 8% of each
+cell's peak). Recovered, identifiable parameters across cells (median [25th-75th percentile]):
+
+- amplitude (the scale*k*m0 product): 518 [287 - 797] - about a 3-fold cell-to-cell spread in expression.
+- the two decay rates (unordered; labels not identifiable): fast 0.185/h [0.13 - 0.23] (half-life ~3.8 h),
+  slow 0.023/h [0.019 - 0.030] (half-life ~30 h).
+- onset time t0: 1.41 h [1.1 - 1.7]; offset: 39 [14 - 83].
+
+Reading: the data resolve two timescales (a few hours and ~a day) plus an onset delay, with substantial
+cell-to-cell variability in expression amplitude. Biologically the fast rate is plausibly the transfected
+mRNA decay and the slow one the stable eGFP decay, though the model cannot formally assign the labels (the
+delta/gamma symmetry). Figure `results/fig11_single_cell_params.png`. PROVISIONAL: single-channel fits,
+the rate-label symmetry, only population spread (no per-cell confidence intervals yet), and the same
+noise-model caveat as the mean-trace fit.
+
 ## Status
 
-Data loaded and visualized; model implemented; first fit and a structural-identifiability check done
-(above), all provisional. Next: profile likelihood on the real fit, single-cell fits, resolving the
+Data loaded and visualized; model implemented; mean-trace fit, structural-identifiability check, and
+single-cell parameter recovery done (above), all provisional. Next: profile likelihood on the real fit, single-cell fits, resolving the
 delta/gamma symmetry, and an independent re-verification of this whole experiment.
 
 ## Notes
