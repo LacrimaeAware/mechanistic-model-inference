@@ -47,6 +47,28 @@ def test_least_squares_matches_nelder_mead_fit():
     assert rss_ls <= rss_nm + 0.05 * rss_nm + 1e-3
 
 
+def test_multistart_m3_respects_nesting():
+    """M1 is M3 with kappa_P = 0, so a multi-start M3 fit must not fit worse than M1 (residual sum of
+    squares of M3 <= that of M1). A single-start M3 fit can violate this by getting stuck near kappa = 0;
+    this guards against that bug returning in the discrimination experiments."""
+    base3 = M.make_dimensional_simulator("M3")
+    clean = base3(TRUE3, T)
+    scale = np.array([clean[:, 0].max(), clean[:, 1].max()])
+    sim3 = lambda th, t: base3(th, t) / scale  # noqa: E731
+    base1 = M.make_dimensional_simulator("M1")
+    sim1 = lambda th, t: base1(th, t) / scale  # noqa: E731
+    rng = np.random.default_rng(0)
+    data = (clean / scale)[:, [1]].ravel() + rng.normal(scale=SIGMA, size=T.size)
+
+    mle1 = fit_least_squares(T, data, (1,), SIGMA, np.log([1.04, 0.35, 7.70, 0.02]), simulate=sim1)
+    rss1 = _rss(sim1, mle1, (1,), data)
+    best3 = np.inf
+    for k in (1e-3, 5e-3, 2e-2, 8e-2, 3e-1):  # multi-start over kappa, including the M1-fit-based start
+        m = fit_least_squares(T, data, (1,), SIGMA, np.append(mle1, np.log(k)), simulate=sim3)
+        best3 = min(best3, _rss(sim3, m, (1,), data))
+    assert best3 <= rss1 + 1e-3
+
+
 def test_least_squares_respects_bounds():
     """The fit stays within theta0 +/- log_bound, which is what keeps it out of the slow stiff regions."""
     sim, clean, scale = _setup()

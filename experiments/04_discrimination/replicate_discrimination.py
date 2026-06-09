@@ -56,11 +56,21 @@ def log(s):
 
 
 def fit_aic(candidate, data, ch, scale):
+    """AIC of the best (multi-start) fit. Regulated models (M2/M3) are multi-started over the regulation
+    strength kappa, because near kappa=0 the protein trace is flat in kappa and a single-start optimizer
+    gets stuck (this contaminated earlier discrimination numbers). M1 has no kappa, so one start."""
     base = M.make_dimensional_simulator(candidate)
     sim_norm = lambda th, t: base(th, t) / scale  # noqa: E731
-    mle = fit_least_squares(T, data, ch, SIGMA, TRUTH[candidate], simulate=sim_norm, max_nfev=MAX_NFEV)
-    rss = float(np.sum((observed(sim_norm(mle, T), ch) - np.asarray(data)) ** 2))
-    return 2 * len(TRUTH[candidate]) + rss / SIGMA ** 2
+    base_theta = TRUTH[candidate]
+    if len(base_theta) == 5:  # M2 or M3: multi-start over kappa
+        starts = [np.append(base_theta[:4], np.log(k)) for k in (1e-3, 5e-3, 2e-2, 8e-2, 3e-1)]
+    else:
+        starts = [base_theta]
+    best_rss = np.inf
+    for s in starts:
+        mle = fit_least_squares(T, data, ch, SIGMA, s, simulate=sim_norm, max_nfev=MAX_NFEV)
+        best_rss = min(best_rss, float(np.sum((observed(sim_norm(mle, T), ch) - np.asarray(data)) ** 2)))
+    return 2 * len(base_theta) + best_rss / SIGMA ** 2
 
 
 def main():
