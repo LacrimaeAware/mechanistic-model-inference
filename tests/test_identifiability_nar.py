@@ -7,7 +7,7 @@ in the regulated models as well as the simplistic one.
 """
 import numpy as np
 
-from mechanistic_inference import identifiability_report
+from mechanistic_inference import fisher_information, identifiability_report
 from mechanistic_inference import models as M
 
 TRUE = {
@@ -49,6 +49,17 @@ def test_m3_protein_only_one_null_direction():
 
 def test_m3_both_channels_full_rank():
     assert _rank("M3", (0, 1)) == (5, 5)
+
+
+def test_fisher_null_direction_matches_analytic():
+    """The Fisher null direction (protein-only) is the analytic k_m vs k_p direction, not numerical
+    noise: it aligns with [+1, 0, -1, 0]/sqrt(2) and is stable across finite-difference step sizes."""
+    sim = M.make_dimensional_simulator("M1")
+    analytic = np.array([1.0, 0.0, -1.0, 0.0]) / np.sqrt(2.0)
+    for eps in (1e-4, 1e-5, 1e-6):
+        F = fisher_information(TRUE["M1"], T, (1,), 1.0, simulate=sim, eps=eps)
+        _, V = np.linalg.eigh(F)
+        assert abs(float(np.dot(V[:, 0], analytic))) > 0.999
 
 
 def test_rate_product_degeneracy_leaves_protein_invariant():

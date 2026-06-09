@@ -157,9 +157,17 @@ def make_dimensional_simulator(model="M1", *, n=2.0, S=0.0, m0=0.0, p0=0.0,
             return (k_m * (1.0 + S) * f - d_m * M, k_p * M * g - d_p * P)
 
         tt = np.asarray(t, dtype=float)
-        sol = solve_ivp(rhs, (float(tt[0]), float(tt[-1])), [m0, p0], t_eval=tt,
-                        method="LSODA", rtol=rtol, atol=atol)
-        return sol.y.T
+        try:
+            sol = solve_ivp(rhs, (float(tt[0]), float(tt[-1])), [m0, p0], t_eval=tt,
+                            method="LSODA", rtol=rtol, atol=atol)
+            y = np.asarray(sol.y, dtype=float)
+            if sol.success and y.shape == (2, tt.size):
+                return y.T
+        except Exception:
+            pass
+        # Integration failed (extreme parameters during optimization): return a large finite sentinel
+        # so the likelihood is huge-but-finite and the optimizer steers away from this region.
+        return np.full((tt.size, 2), 1e6, dtype=float)
 
     return simulate
 

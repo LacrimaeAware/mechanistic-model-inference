@@ -57,13 +57,43 @@ identifiable but weakly constrained) agree in direction and differ in strength.
   bounded profile. Caveat: the kappa_P profile is shallow at 3% noise and 80 samples, so the interval
   is wide. Status: supported structurally, weak practically.
 
+## Methodology audit
+
+The verdicts were checked five ways against the risk of method artifacts
+(`experiments/02_identifiability/verify_methodology.py`, output in
+`results/verify_methodology_summary.txt`).
+
+1. Spectral gap: the non-identifiable eigenvalue is 1e-16 or exactly 0 relative to the largest, while
+   the smallest identifiable eigenvalue is 1e-5 to 1e-4 relative. The rank is a clear call, not a
+   threshold-sensitive one.
+2. Finite-difference robustness: the M1 protein-only null direction aligns with the analytic k_m/k_p
+   direction ([+1, 0, -1, 0]/sqrt(2)) to |dot| = 1.0000 for step sizes 1e-4, 1e-5, 1e-6. The null
+   direction is the analytic degeneracy, not numerical noise.
+3. Method agreement: for M3 with both channels (identifiable), the Fisher standard error and the
+   profile-likelihood interval agree in order and direction. The profile half-width at the 95%
+   threshold is about 1.3 to 1.5 times the Gaussian prediction (1.96 x Fisher SE), i.e. slightly wider,
+   as expected when the likelihood has non-Gaussian tails. The profile half-widths are quantized by the
+   grid resolution (0.2 in log units), so the comparison is order-of-magnitude, not exact.
+4. MLE recovery: fitting both channels recovers all five parameters (max log error 0.07). Fitting
+   protein only, started off the truth along the degenerate direction, recovers the k_m k_p product
+   (log error 0.06) but not the split (log k_m error 0.50), and still recovers kappa_P (error 0.08).
+   The degeneracy is reproduced operationally, not just asserted.
+5. Noise sweep (M3): k_m is non-identifiable at every noise level tested (0.5% to 30%), confirming the
+   degeneracy is structural, not noise-driven. kappa_P crosses from identifiable to non-identifiable
+   between 1% and 3% noise under protein-only, and between 3% and 10% with mRNA observed, so the mRNA
+   channel buys roughly a decade of noise tolerance for kappa. The crossover is approximate (one noise
+   realization per setting, coarse sigma grid).
+
+Net: the structural conclusion is corroborated by three independent routes (the analytic scaling
+symmetry, the Fisher rank, and MLE recovery). The practical conclusion is consistent across the Fisher
+standard error, the profile width, and the noise sweep, with the quantitative thresholds approximate.
+
 ## Open items
 
-- Practical sweep over noise level and sampling density (only one setting shown). The shallow kappa
-  profile is a hypothesis that practical identifiability of kappa depends on feedback strength and on
-  sampling where the Hill term is active; an input step that drives the protein through the Hill
-  midpoint may tighten it. Not yet tested.
-- M2 practical profiles (only M3 shown structurally and practically).
+- Sampling design: the noise sweep is done (above), but sampling density and horizon were held fixed.
+  Open hypothesis, untested: an input step that drives the protein through the Hill midpoint tightens
+  the kappa interval.
+- M2 practical profiles (only M3 was profiled in detail).
 - The single-sigma likelihood weights mRNA and protein equally after per-channel normalization; a more
   realistic per-channel noise model is a later refinement.
 

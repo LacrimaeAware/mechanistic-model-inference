@@ -26,7 +26,7 @@ how well, and from what measurements. The first target is the 2023 negative-auto
 - Phase 2 identifiability map: `make_dimensional_simulator` in `models.py` feeds the carried-over
   Fisher/profile tooling; analysis and figure in `experiments/02_identifiability/identifiability_map.py`,
   write-up in `experiments/02_identifiability/identifiability.md`.
-- Tests: 24 passing (6 baseline identifiability, 8 model, 3 stochastic, 7 Phase 2). Run with
+- Tests: 25 passing (6 baseline identifiability, 8 model, 3 stochastic, 8 Phase 2). Run with
   `python -m pytest tests/ -q` (a venv with `requirements.txt` plus `pytest` is assumed; `conftest.py`
   puts `src/` on the path).
 
@@ -69,8 +69,11 @@ rate product (k_m vs k_p); the regulation strength kappa is identifiable; observ
 rank. A hypothesis that transcriptional feedback would break the product degeneracy was refuted, both
 analytically (the scaling k_m c, k_p / c leaves the protein trajectory invariant) and via the Fisher
 null direction. Practical profiles on M3 agree (k_m flat under protein-only, bounded with mRNA; kappa_P
-bounded but weakly). The remaining Phase 2 work is a practical sweep over noise and sampling, and
-profiles for M2. See `experiments/02_identifiability/identifiability.md`.
+bounded but weakly). A methodology audit (`verify_methodology.py`) corroborates the structural result
+three independent ways (analytic scaling symmetry, Fisher rank, MLE recovery) and shows a noise sweep
+where k_m stays non-identifiable at every noise level while kappa crosses identifiable -> not as noise
+grows (protein-only between 1-3%, mRNA+protein between 3-10%). The remaining Phase 2 work is M2
+practical profiles. See `experiments/02_identifiability/identifiability.md`.
 
 ## Data note
 
