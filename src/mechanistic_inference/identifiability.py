@@ -70,6 +70,31 @@ def fit_mle(t, data, channels, sigma, theta0, *, simulate=simulate_mrna_protein,
     return res.x
 
 
+def fit_least_squares(t, data, channels, sigma, theta0, *, simulate=simulate_mrna_protein,
+                      log_bound: float = 6.0, max_nfev: int = 300):
+    """Bounded, fast maximum-likelihood fit via trust-region least squares on the residuals.
+
+    The Gaussian negative log-likelihood is a sum of squared residuals, so ``least_squares`` (which uses
+    the residual structure) converges far faster than the Nelder-Mead simplex and accepts box bounds. The
+    bounds keep the optimizer out of the stiff parameter regions where the ODE solver is pathologically
+    slow, and ``max_nfev`` caps the work per fit; together they make large fitting sweeps (replication,
+    discriminability maps, real-data fits) feasible. Bounds are ``theta0 +/- log_bound`` in log space.
+    Returns the MLE theta. On a non-identifiable direction it returns some point on the flat ridge (the
+    fit value, e.g. the residual sum of squares, is the same anywhere along it).
+    """
+    from scipy.optimize import least_squares
+
+    data = np.asarray(data, dtype=float)
+    theta0 = np.asarray(theta0, dtype=float)
+
+    def resid(theta):
+        return (observed(simulate(theta, t), channels) - data) / sigma
+
+    lb, ub = theta0 - log_bound, theta0 + log_bound
+    res = least_squares(resid, theta0, bounds=(lb, ub), method="trf", max_nfev=max_nfev)
+    return res.x
+
+
 def profile_likelihood(index, theta_mle, t, data, channels, sigma, *, grid=None,
                        span: float = 2.0, n: int = 21, simulate=simulate_mrna_protein,
                        maxiter: int = 2000, xatol: float = 1e-6, fatol: float = 1e-9):

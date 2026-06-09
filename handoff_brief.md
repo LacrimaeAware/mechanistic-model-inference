@@ -93,17 +93,18 @@ draws for M3 kappa_P, 5/10 for M2 kappa_M), and both are clearly identifiable wi
 - These experiments reproduce by running the scripts (results write to the gitignored `results/`); no
   unit tests were added for them since the fits and MCMC are slow.
 
-## Known tooling debt (blocks the next round of experiments)
+## Tooling note (the fitting bottleneck, resolved)
 
-- Fitting is slow and fragile at scale. `fit_mle` uses Nelder-Mead; fitting a wrong model or exploring
-  bad parameters sends individual `solve_ivp` calls on the stiff system into pathologically slow regions,
-  and there is no per-fit time bound. This made the discrimination replication impractical (one run
-  burned ~50 minutes of CPU). Any experiment needing hundreds of fits (replication, discriminability
-  maps, experimental-design sweeps, real-data fitting) is blocked until this is fixed.
-- Likely fixes: a bounded, gradient-aware optimizer (least-squares with parameter bounds), a wall-clock
-  or step cap per fit, the analytic M1 cascade where applicable, and tighter parameter priors/bounds.
-  Long-running scripts should flush per-iteration progress (now done in the replication script) so a run
-  can be monitored instead of buffering silently.
+- The original `fit_mle` (Nelder-Mead, unbounded) was slow and fragile: fitting a wrong model sent it
+  into stiff parameter regions where individual `solve_ivp` calls were pathologically slow, with no
+  per-fit cap. This made the discrimination replication impractical (one run burned ~50 minutes of CPU).
+- Fixed by `fit_least_squares` (`mechanistic_inference.identifiability`): trust-region least squares on
+  the residuals, with box bounds (theta0 +/- log_bound) that keep the optimizer out of the slow regions
+  and a `max_nfev` cap. It is ~8x faster per fit and reliably bounded; the borderline-cell replication
+  now runs in ~30 s instead of not finishing. The discrimination scripts use it. The old `fit_mle` is
+  kept for the existing profile-likelihood tests.
+- Habit adopted: long-running scripts flush per-iteration progress so a run can be monitored live
+  instead of buffering silently.
 
 ## Data note
 

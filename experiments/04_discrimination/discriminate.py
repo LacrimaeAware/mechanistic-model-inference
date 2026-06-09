@@ -25,7 +25,7 @@ import numpy as np
 warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 from mechanistic_inference import models as M  # noqa: E402
-from mechanistic_inference import fit_mle, observed  # noqa: E402
+from mechanistic_inference import fit_least_squares, observed  # noqa: E402
 
 RESULTS = os.path.join(os.path.dirname(__file__), "..", "..", "results")
 os.makedirs(RESULTS, exist_ok=True)
@@ -53,7 +53,7 @@ def record(s):
 def fit_aic_bic(candidate, data, ch, scale):
     base = M.make_dimensional_simulator(candidate)
     sim_norm = lambda th, t: base(th, t) / scale  # noqa: E731
-    mle = fit_mle(T, data, ch, SIGMA, START[candidate], simulate=sim_norm, maxiter=1500)
+    mle = fit_least_squares(T, data, ch, SIGMA, START[candidate], simulate=sim_norm, max_nfev=300)
     pred = observed(sim_norm(mle, T), ch)
     rss = float(np.sum((pred - np.asarray(data)) ** 2))
     k, N = len(START[candidate]), len(data)

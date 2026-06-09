@@ -6,6 +6,7 @@ project's targets live in :mod:`mechanistic_inference.models`.
 """
 from .identifiability import (
     fisher_information,
+    fit_least_squares,
     fit_mle,
     identifiability_report,
     is_identifiable,
@@ -20,6 +21,7 @@ __all__ = [
     "observed",
     "neg_log_likelihood",
     "fit_mle",
+    "fit_least_squares",
     "profile_likelihood",
     "is_identifiable",
     "fisher_information",

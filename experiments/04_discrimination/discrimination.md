@@ -52,18 +52,38 @@ Scenario B, M2 vs M3 at symmetric feedback:
   Status: confirmed with an asymmetry. Discrimination power depends on which model generated the data,
   because M2 is the richer model in the mRNA channel.
 
-## Open items (backward verification needed)
+## Replication over noise draws (backward verification, done)
 
-- The small delta-AIC cells (0.3 to 2.5) are single-realization and not quantitative. Replicating them
-  over many noise draws (`experiments/04_discrimination/replicate_discrimination.py`) is the right check,
-  but it is currently BLOCKED on a tooling problem: fitting a wrong candidate model sends the
-  Nelder-Mead optimizer into stiff-ODE parameter regions where individual solver calls are pathologically
-  slow, so a full replication did not finish in a practical time (one attempt consumed ~50 minutes of
-  CPU before it was stopped). The script now flushes per-cell/per-draw progress so a run can be
-  monitored live. Before replication is reliable, the fitting needs per-fit time-bounding and/or a
-  faster bounded optimizer (see the tooling-debt note in `handoff_brief.md`). Until then the single-run
-  verdicts stand as preliminary: the large delta-AIC cells (> 20) are trustworthy; the small ones are
-  not yet quantified.
+The borderline cells were replicated over 25 noise draws each
+(`experiments/04_discrimination/replicate_discrimination.py`), using the bounded least-squares fitter
+(`fit_least_squares`) that made this feasible (the run takes ~30 s; the earlier Nelder-Mead version did
+not finish). "Select rate" is the fraction of draws the true model wins on AIC.
+
+| comparison              | channel       | true-model select rate | mean delta-AIC | verdict             |
+| ----------------------- | ------------- | ---------------------- | -------------- | ------------------- |
+| M1 vs M3 (truth M3)     | mRNA-only     | 0%                     | -1.9 +/- 0.2   | indistinguishable   |
+| M1 vs M3 (truth M3)     | protein-only  | 88%                    | +4.6 +/- 5.6   | mostly distinguishable |
+| M2 vs M3 (truth M2)     | protein-only  | 96%                    | +2.5 +/- 2.8   | reliable            |
+| M2 vs M3 (truth M3)     | mRNA-only     | 32%                    | -1.3 +/- 1.9   | indistinguishable   |
+| M2 vs M3 (truth M3)     | protein-only  | 68%                    | +0.0 +/- 1.9   | marginal            |
+
+Corrections to the single-run verdicts:
+- M1 vs M3 under protein-only is NOT a tie. The single run gave delta-AIC +0.6 (one low draw); over 25
+  draws protein-only picks the true M3 88% of the time. So protein alone mostly distinguishes M1 from M3;
+  the earlier statement that "you need both channels" was an overread of one realization.
+- M2 vs M3 under protein-only when the truth is M2 is reliable (96%), not borderline as the single +2.5
+  suggested.
+- The asymmetry holds: when the truth is M3, mRNA-only cannot separate them (32%, M2 mimics M3) and
+  protein-only is only marginal (68%).
+
+## Open items
+
+- Discrimination depends on feedback strength, held fixed here at 1/kappa = 50 molecules; a sweep over
+  feedback strength (and over M2's oscillatory regime) is the natural extension, now feasible with the
+  fast fitter. This is the path to a "discriminability map".
+- AIC and BIC agreed on the winner in every single-run cell; BIC's heavier penalty would mainly shift
+  the borderline rates, worth checking alongside the feedback sweep.
+- A per-channel noise model (mRNA and protein measured at different precision) is a later refinement.
 - Feedback strength was fixed (1/kappa = 50 molecules). Discrimination should depend on it; a sweep over
   feedback strength (and over whether M2 is in its oscillatory regime) is untested.
 - AIC and BIC agreed on the winner in every cell here; BIC's larger penalty would matter mainly in the

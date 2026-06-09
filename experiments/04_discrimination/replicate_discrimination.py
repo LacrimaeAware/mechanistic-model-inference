@@ -23,14 +23,14 @@ import numpy as np
 warnings.filterwarnings("ignore")
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
 from mechanistic_inference import models as M  # noqa: E402
-from mechanistic_inference import fit_mle, observed  # noqa: E402
+from mechanistic_inference import fit_least_squares, observed  # noqa: E402
 
 RESULTS = os.path.join(os.path.dirname(__file__), "..", "..", "results")
 os.makedirs(RESULTS, exist_ok=True)
-T = np.linspace(0.0, 300.0, 30)   # coarse grid: cheap fits
+T = np.linspace(0.0, 300.0, 60)   # bounded least-squares fits are fast, so a finer grid is affordable
 SIGMA = 0.03
-N = 10                            # draws per cell (enough to tell ~50% from ~100%)
-MAXITER = 150
+N = 25                            # draws per cell
+MAX_NFEV = 200
 lines = []
 
 TRUTH = {
@@ -58,13 +58,14 @@ def log(s):
 def fit_aic(candidate, data, ch, scale):
     base = M.make_dimensional_simulator(candidate)
     sim_norm = lambda th, t: base(th, t) / scale  # noqa: E731
-    mle = fit_mle(T, data, ch, SIGMA, TRUTH[candidate], simulate=sim_norm, maxiter=MAXITER)
+    mle = fit_least_squares(T, data, ch, SIGMA, TRUTH[candidate], simulate=sim_norm, max_nfev=MAX_NFEV)
     rss = float(np.sum((observed(sim_norm(mle, T), ch) - np.asarray(data)) ** 2))
     return 2 * len(TRUTH[candidate]) + rss / SIGMA ** 2
 
 
 def main():
-    log(f"Replicated borderline discrimination, N={N} draws, {SIGMA:.0%} noise, grid={len(T)}, maxiter={MAXITER}.")
+    log(f"Replicated borderline discrimination, N={N} draws, {SIGMA:.0%} noise, grid={len(T)}, "
+        f"bounded least-squares (max_nfev={MAX_NFEV}).")
     log("'select rate' = fraction of draws the true model wins on AIC (~50% = indistinguishable).")
     log("=" * 78)
     t_start = time.time()
