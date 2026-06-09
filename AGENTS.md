@@ -23,6 +23,21 @@ established these through repeated correction; they are not optional polish.
 - Verify the method, the code, and the write-up before reporting. Re-running and finding an error is
   expected, not noteworthy.
 
+## Calibration and uncertainty in claims
+
+- Frame findings as hypotheses with the evidence for and against, not as settled conclusions. State
+  the leading explanation, why it is credible, and the reasons it might be wrong.
+- Do not claim full understanding of why a result occurred. Give the most likely cause and the
+  alternatives that have not been ruled out.
+- Do not assert an exact or complete solution. Report the actual numbers and what they do and do not
+  establish.
+- Avoid self-certifying words ("honest", "honestly", "to be clear", "the real answer"). They add no
+  information and imply the rest needs certifying.
+- Stay calibrated to the evidence. Do not alternate between overselling and underselling. A result is
+  usually partial; saying how partial it is, is the point.
+- When proposing work, name the problem first, then the candidate approaches, then why each is or is
+  not promising. Prioritize among them rather than presenting one option as the answer.
+
 ## Privacy (this repo is public-facing)
 
 - Citing published papers by author and year is fine and expected (see `docs/literature.md`).
