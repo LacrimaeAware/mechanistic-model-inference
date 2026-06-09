@@ -66,7 +66,9 @@ result, and it does not claim to be.
 - **Solid** (analytic / deterministic / tested): the reproduction of the paper's models (experiment 01),
   the identifiability core (experiment 02, backed by a proof, not just the numerical method), the
   experimental-design result (experiment 07), and the deterministic mechanism distinguishability
-  (experiment 09). 29 tests pass.
+  (experiment 09). 33 tests pass, including four that **independently re-derive** the load-bearing
+  findings (a symbolic proof of the rate degeneracy among them); see
+  [`docs/verification_audit.md`](docs/verification_audit.md).
 - **Provisional** (a first pass, re-verification owed): the real-data fits (experiment 05); the
   experimental-design and distinguishability numbers depend on the multi-start fit reaching the global
   optimum. See [`docs/verification_debt.md`](docs/verification_debt.md).
@@ -125,7 +127,7 @@ A verified literature review ([`docs/literature_research.md`](docs/literature_re
 
 ```bash
 # Python 3.13, dependencies in requirements.txt; a venv with pytest assumed
-.venv\Scripts\python.exe -m pytest tests/ -q                                  # 29 tests
+.venv\Scripts\python.exe -m pytest tests/ -q                                  # 33 tests
 .venv\Scripts\python.exe experiments/02_identifiability/identifiability_map.py # any experiment
 .venv\Scripts\python.exe experiments/09_structural_distinguishability/structural_distinguishability.py
 ```
@@ -141,7 +143,7 @@ mechanistic-model-inference/
 ├── src/mechanistic_inference/   # models and the identifiability/inference tooling
 ├── experiments/                 # one folder per experiment, each with a write-up and a script
 ├── docs/                        # summary, methodology review, literature, the website (docs/index.html)
-└── tests/                       # 29 correctness tests
+└── tests/                       # 33 correctness tests
 ```
 
 ## Further reading
@@ -151,5 +153,6 @@ mechanistic-model-inference/
 - [`docs/literature_research.md`](docs/literature_research.md) and
   [`docs/literature_references.md`](docs/literature_references.md): the verified literature and novelty
   verdict, with citations.
+- [`docs/verification_audit.md`](docs/verification_audit.md): the independent re-derivation of the load-bearing findings and the per-experiment methodology audit.
 - [`docs/verification_debt.md`](docs/verification_debt.md): what is verified and what still owes a check.
 - Each `experiments/NN_*/` directory has the full numbers and the per-experiment write-up.

@@ -2,6 +2,8 @@ numpy
 scipy
 matplotlib
 pandas
+sympy
+openpyxl
 # later phases (Bayesian inference and posterior diagnostics)
 emcee
 arviz
