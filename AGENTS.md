@@ -39,9 +39,12 @@ established these through repeated correction; they are not optional polish.
   not promising. Prioritize among them rather than presenting one option as the answer.
 - A result is provisional until independently re-verified. Passing one's own checks is not
   certification. Do not call results "trustworthy", "settled", "verified", or "definitive" on the basis
-  of self-checks alone; say which specific checks were run and that other errors may remain. Keep a
-  running list of what has and has not been re-verified, and assume bugs of the kind already found
-  (optimizer initialization, conflated settings, single-realization claims) can recur.
+  of self-checks alone; say which specific checks were run and that other errors may remain.
+- Before claiming a result, enumerate its verification targets (the specific places it could be wrong:
+  likelihood form, AIC/BIC bookkeeping, optimizer convergence, model code, finite-difference accuracy,
+  noise model, single-realization vs distribution), check them, and record what remains unchecked in
+  `docs/verification_debt.md`. Re-verify by a different route, not by re-running the same code. Assume
+  the bugs already found (optimizer initialization, conflated settings, single-realization claims) recur.
 
 ## Privacy (this repo is public-facing)
 

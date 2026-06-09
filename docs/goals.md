@@ -40,3 +40,29 @@ verified against a known case (the no-regulation mRNA-to-protein baseline) befor
   experimental design; a short write-up.
 - Out of scope unless it earns a place: new wet-lab data; large model families; anything that depends
   on beating a benchmark.
+
+## Positioning and relevance (honest)
+
+Stated plainly so the work is aimed correctly:
+
+- This is a small analysis-and-learning project, sibling to stable-grn-inference. It currently sits
+  between a learning exercise and a modest analysis contribution. Most results so far are on synthetic
+  data and confirm expected structure; the non-obvious finding (the asymmetric mechanism
+  discriminability) is the candidate seed of something more.
+- The realistic research output is a short, correct note: an identifiability-and-discriminability
+  analysis of the target's negative-autoregulation models - which parameters are estimable from which
+  measurements, and when the two regulatory mechanisms can be told apart from data and what to measure.
+  A recognized but modest contribution type; it does not depend on beating a benchmark.
+- Relevance to the target's research: the discriminability/identifiability of the target's specific
+  mechanisms is the complementary question the source paper raises (it compares transcriptional versus
+  translational autoregulation) but does not answer (whether data can distinguish them). That is the
+  relevant core. The real-data work on the open-loop translation dataset validates the tooling but is
+  tangential to the target's autoregulation biology; connecting to a real autoregulation system (for
+  example Hes1) would make it directly relevant.
+- What would make it matter, short of effort alone: a clean, correct, new result about the target's
+  models that the source did not produce - chiefly the mechanism-discrimination map plus an
+  experimental-design recommendation - reported with explicit limits. A reproduction, or a confirmation
+  of a known degeneracy, is competence, not contribution.
+- Honest gap: the project studies the statistical properties (identifiability) of the models, which is
+  adjacent to but not the same as the dynamical and biological story the source cares about; engaging
+  the dynamics more would deepen the understanding of the source work itself.
