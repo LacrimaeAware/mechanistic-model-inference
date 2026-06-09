@@ -31,25 +31,35 @@ the WRONG mechanism. A direct check refuted this before it was reported:
 The lesson, recorded because it will recur: a surprising number (here, a true model losing more than half
 the time) is a prompt to check, not to report. See docs/verification_debt.md.
 
-## Results (provisional; from the reproducible N = 25 re-run)
+## Results (provisional; reproducible N = 25 re-run)
 
-Robust, low-variance findings (rates at 0% or 100% have small sampling error and are mechanistically
-sensible):
+Reliable (low variance, mechanistically clear):
 
-- mRNA + protein observation distinguishes the two mechanisms reliably (~100%) at every feedback
-  strength. Mechanistically clear: only transcriptional autoregulation regulates mRNA, so the mRNA
-  channel reveals the mechanism directly.
-- The asymmetry is the real finding. Transcriptional autoregulation (truth M2) is mostly detectable from
-  protein alone, more so as feedback strengthens. Translational autoregulation (truth M3) is close to
-  indistinguishable from transcriptional using protein alone, because M2 and M3 fit M3 protein data
-  almost identically.
+- mRNA + protein observation distinguishes the two mechanisms at ~100% for every feedback strength. Only
+  transcriptional autoregulation regulates mRNA, so the mRNA channel reveals the mechanism directly. This
+  is the firm finding.
 
-Exact per-cell rates are in `results/discriminability_map_summary.txt`; the protein-only cells near 50%
-are pinned only to about +/- 10% at N = 25 and should not be over-read.
+Protein-only, truth = M2 (transcriptional): true model wins 72% (1/kappa = 200), 88% (50), 96% (20) -
+above chance and rising with feedback, so transcriptional autoregulation leaves a detectable protein
+signature. These exact rates still need verification (one optimizer, one noise level).
 
-Experimental-design reading (provisional): to identify which autoregulation mechanism a gene uses, the
-mRNA channel is necessary; protein-only measurement can identify transcriptional autoregulation but not
-translational, which it confounds with transcriptional.
+Protein-only, truth = M3 (translational): NOT reliably determined, and quoting a rate would be wrong. The
+reproducible re-run gives 28% / 16% / 52%, but an independent earlier check on different noise draws gave
+about 80% for the same cell. Two runs disagreeing by ~60 points means the rate is not a stable quantity
+here - which is itself the finding: M2 and M3 fit M3 protein-only data so closely (residual sum of squares
+tied to ~4 decimals) that the AIC winner is decided by sub-noise-floor wobble, i.e. a near-tie. The honest
+statement is qualitative only: from protein alone, translational autoregulation is NOT reliably
+distinguishable from transcriptional.
+
+Net robust reading: to identify which autoregulation mechanism a gene uses, mRNA observation is needed;
+protein-only can detect transcriptional autoregulation but does not reliably identify translational (it
+is confounded with transcriptional in the protein channel).
+
+Methodological note (a real limitation, not a tuning issue): comparing two non-nested models that fit
+nearly identically with raw AIC produces an unstable winner, so no protein-only rate from this experiment
+is trustworthy yet. A better discrimination statistic is needed - bootstrap or cross-validated
+likelihood, or a Bayes factor with an explicit noise model - before any protein-only number is reported.
+This is now the top verification/methodology target for the experiment.
 
 ## Verification targets (not yet done)
 
