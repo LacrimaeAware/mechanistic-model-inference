@@ -9,15 +9,18 @@ docs/goals.md.
 - Project structure, conventions (AGENTS.md), goals, research questions, literature.
 - Carried-over identifiability tooling, validated on the textbook mRNA-to-protein model.
 
-## Phase 1: reproduce the target models
+## Phase 1: reproduce the target models (deterministic part done)
 
 - Transcribe the three ODE models from the paper (no regulation; transcriptional negative
   autoregulation; translational negative autoregulation), exact right-hand sides and parameters, into
-  `mechanistic_inference.models`.
+  `mechanistic_inference.models`. Done: the dimensionless models (Eqs. 4-7) are implemented and
+  covered by `tests/test_models.py`.
 - Match the published deterministic behavior: faster response and quicker return under regulation, and
-  oscillation in the transcriptional model.
-- Optional: reproduce the stochastic-noise ordering with a Gillespie simulation.
-- Deliverable: a script and note that regenerate the paper's figures from the equations.
+  oscillation in the transcriptional model. Done: reproduced in
+  `experiments/01_reproduce_autoregulation_models` (Figs. 4-5 ordering; M1 matches the Eq. 8 closed
+  form to 3e-8).
+- Optional: reproduce the stochastic-noise ordering with a Gillespie simulation. Deferred.
+- Deliverable: a script and note that regenerate the paper's figures from the equations. Done.
 
 ## Phase 2: identifiability
 
@@ -59,4 +62,10 @@ docs/goals.md.
 - Identifiability pipeline built and validated on the textbook mRNA-to-protein model: observing
   protein only, transcription and translation rates are non-identifiable (Fisher rank 3 of 4);
   observing mRNA as well makes them identifiable (rank 4 of 4). See `tests/test_identifiability.py`.
-- Next: Phase 1, transcribe the target models from the paper.
+- Phase 1 deterministic reproduction done: the three target models are in
+  `mechanistic_inference.models`, the paper's deterministic behavior is reproduced
+  (`experiments/01_reproduce_autoregulation_models`), and the full suite is 14 tests passing
+  (6 identifiability, 8 models). Two structural degeneracies were noted for Phase 2: mRNA cannot
+  separate M1 from M3, and M2/M3 protein steady states coincide under symmetric feedback.
+- Next: Phase 2, Fisher rank and profile likelihood for each model under protein-only and
+  mRNA-plus-protein observation.

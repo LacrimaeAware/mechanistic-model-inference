@@ -23,26 +23,54 @@ autoregulations in protein dynamics," Molecular Omics 19(1):60-71. DOI 10.1039/D
 - Why first: the no-regulation case is the textbook mRNA-to-protein cascade the carried-over tooling
   already validates on, and the three nested models invite an identifiability and model-discrimination
   analysis.
-- Status: abstract and bibliographic details confirmed by web search. The exact equations, Hill
-  exponents, and parameter values must be transcribed from the paper text before Phase 1.
+- Status: the author manuscript (31-page accepted version) is held locally and not committed
+  (data/raw, gitignored). A first-pass transcription of the three models, the Hill forms, and the
+  parameter table is complete. A few equation details still await visual confirmation against the PDF
+  before Phase 1 locks: how the input amplitude enters the two regulated models, and the
+  nondimensionalization exponents.
+
+## Recent work by the first target's author (candidate later targets)
+
+- Yildirim (2025), "Cellular Decision Making and Signal Adaptation Via Incoherent Feedforward and
+  Negative Feedback Loops," Differential Equations and Dynamical Systems. DOI
+  10.1007/s12591-025-00735-z. Two three-state ODE motifs (an incoherent feedforward loop and a
+  negative feedback loop) that both produce adaptation but differ in signature: linear versus
+  saturating dose response, exponential versus oscillatory return. Held locally (data/raw, gitignored).
+  Cites the first target. Strong candidate for the Phase 5 second target: it concretizes the
+  cellular-adaptation placeholder in the roadmap and mirrors the first target's two-mechanism
+  discrimination question.
+- Yildirim, Brew and Ay (2025), "Regulatory Effects of Cooperativity and Signal Profile on Adaptive
+  Dynamics in Incoherent Feedforward Loop Networks," In Silico Biology 16(1). DOI
+  10.1177/14343207241306092. Companion on the effect of cooperativity (Hill coefficient) and signal
+  profile on feedforward adaptation. Not held locally. Identifiers verified via Crossref.
 
 ## Additional source (textbook chapter)
 
-Chapter 2, "Stability in bacterial genetic networks: a comparison of differential equations and
-Boolean network models," in Mathematical Concepts and Methods in Modern Biology (2nd edition, 2024,
-ISBN 9780443296529). A direct comparison of continuous ODE and discrete Boolean models for the same
-genetic-network stability question. Relevant as context for model choice and as a possible second
-target. Status: a local copy exists; it needs text extraction and has not yet been summarized from the
-source.
+Robeva and Yildirim (2024), Chapter 2, "Bistability in bacterial genetic networks: a comparison of
+differential equations and Boolean network models," in Mathematical Concepts and Methods in Modern
+Biology (2nd edition, ISBN 9780443296529), pp. 47-95. DOI 10.1016/B978-0-443-29652-9.00001-4. A
+comparison of continuous ODE and discrete Boolean models of bistability in the lactose and arabinose
+operons. Relevant as context for model choice and as a source of candidate targets. The minimal
+three-variable arabinose ODE model (delay-free, bistable in external arabinose) is the most tractable
+identifiability target it contains; the lactose models are delay-differential, which complicates
+standard identifiability tooling. Full parameter tables are not reproduced in the chapter (they are in
+the cited operon sources). Status: local copy extracted and summarized; bistability windows and
+steady-state tables recorded for later use.
 
-## Related modeling work on autoregulation (found, to verify against the sources)
+## Related modeling work on autoregulation (independent of the first target's author)
 
-- "Autoregulation of Transcription and Translation: A Qualitative Analysis," Bulletin of Mathematical
-  Biology (2023).
-- "Auto-Regulation of Transcription and Translation: Oscillations, Excitability and Intermittency"
-  (PMC8615617).
+- Murray (2023), "Autoregulation of Transcription and Translation: A Qualitative Analysis," Bulletin
+  of Mathematical Biology 85(7):57. DOI 10.1007/s11538-023-01143-6; PubMed 37233955.
+- Murray, Ocana, Meijer and Dale (2021), "Auto-Regulation of Transcription and Translation:
+  Oscillations, Excitability and Intermittency," Biomolecules 11(11):1566. DOI 10.3390/biom11111566;
+  PMC8615617.
 
-These overlap the first target's theme and may inform the model forms and the oscillation analysis.
+Both are independent works, not by the first target's author, on the same model family: a two-variable
+mRNA/protein ODE system with Hill-type transcriptional self-repression and nonlinear regulation of
+translation, producing oscillation, excitability, and homeostasis. The 2021 paper models the Hes/Her
+system and is the precursor to the 2023 analysis. They share the first target's modeling form and are
+natural comparators for the model-discrimination question. Identifiers verified via Crossref and
+PubMed.
 
 ## Carried-over context (verified in the sibling project; 23 of 25 claims confirmed there)
 

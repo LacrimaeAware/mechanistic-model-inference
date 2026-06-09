@@ -12,6 +12,11 @@ venv/
 /results/*
 !/results/.gitkeep
 *.h5ad
+# Copyrighted source documents: never commit to this public-facing repo
+/data/*.pdf
+/data/*.txt
+/data/*.docx
+/data/*.epub
 
 # OS and editor
 .DS_Store
