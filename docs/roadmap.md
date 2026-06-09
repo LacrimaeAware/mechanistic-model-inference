@@ -24,12 +24,16 @@ docs/goals.md.
   (`reproduce_stochastic.py`).
 - Deliverable: a script and note that regenerate the paper's figures from the equations. Done.
 
-## Phase 2: identifiability
+## Phase 2: identifiability (structural map done; practical sweep in progress)
 
 - For each model and each observation scheme (protein-only, mRNA-plus-protein), compute Fisher rank
-  and profile likelihoods.
-- Name the non-identifiable directions; compare to the known no-regulation baseline.
-- Deliverable: an identifiability map per model.
+  and profile likelihoods. Done structurally for all three models and both schemes; practical profiles
+  done for M3, partial for the others (`experiments/02_identifiability`).
+- Name the non-identifiable directions; compare to the known no-regulation baseline. Done: the only
+  protein-only null direction is the k_m vs k_p product, the same in all three models; kappa is
+  identifiable; mRNA restores full rank.
+- Deliverable: an identifiability map per model. Done (structural); a noise and sampling sweep for the
+  practical map is the remaining piece.
 
 ## Phase 3: inference under noise
 
@@ -70,5 +74,8 @@ docs/goals.md.
   (`experiments/01_reproduce_autoregulation_models`). Full suite is 17 tests passing (6 identifiability,
   8 models, 3 stochastic). Two structural degeneracies were noted for Phase 2: mRNA cannot separate M1
   from M3, and M2/M3 protein steady states coincide under symmetric feedback.
-- Next: Phase 2, Fisher rank and profile likelihood for each model under protein-only and
-  mRNA-plus-protein observation.
+- Phase 2 structural map done: in all three models the only protein-only non-identifiable direction is
+  the k_m vs k_p product; kappa is identifiable; mRNA restores full rank (`experiments/02_identifiability`,
+  24 tests passing). A hypothesis that transcriptional feedback breaks the degeneracy was refuted.
+- Next: the practical identifiability sweep (noise and sampling) to finish Phase 2, then Phase 3
+  (maximum-likelihood recovery, then Bayesian / MCMC).

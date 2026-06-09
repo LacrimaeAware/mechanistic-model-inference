@@ -122,6 +122,48 @@ def steady_state(*, theta, kappa_tilde_M=0.0, kappa_tilde_P=0.0, n_M=2.0, n_P=2.
     return m_star, p_star
 
 
+def make_dimensional_simulator(model="M1", *, n=2.0, S=0.0, m0=0.0, p0=0.0,
+                               rtol=1e-8, atol=1e-10):
+    """Build a ``simulate(theta, t) -> (len(t), 2)`` closure for the identifiability tooling.
+
+    The closure integrates the dimensional model in molecule units, so the transcription/translation
+    rates are explicit and the protein-only product degeneracy (the baseline result) can appear:
+
+        dM/dt = k_m (1 + S) f(P) - d_m M ,   dP/dt = k_p M g(P) - d_p P .
+
+    ``theta`` is the log of the free parameters, in a fixed order per model:
+        M1 (no regulation)        : [k_m, d_m, k_p, d_p]
+        M2 (transcriptional NAR)  : [k_m, d_m, k_p, d_p, kappa_M]   (f(P) = 1/(1+(kappa_M P)^n))
+        M3 (translational NAR)    : [k_m, d_m, k_p, d_p, kappa_P]   (g(P) = 1/(1+(kappa_P P)^n))
+    The Hill coefficient ``n`` and the input level ``S`` are held fixed (treated as known), matching the
+    paper's fixed n = 2; identifiability is asked about the rate and regulation parameters.
+    """
+    from scipy.integrate import solve_ivp
+
+    model = model.upper()
+    if model not in ("M1", "M2", "M3"):
+        raise ValueError("model must be 'M1', 'M2', or 'M3'")
+
+    def simulate(theta, t):
+        p = np.exp(np.asarray(theta, dtype=float))
+        k_m, d_m, k_p, d_p = p[0], p[1], p[2], p[3]
+        kappa_M = p[4] if model == "M2" else 0.0
+        kappa_P = p[4] if model == "M3" else 0.0
+
+        def rhs(_t, y):
+            M, P = y
+            f = 1.0 if kappa_M == 0.0 else 1.0 / (1.0 + (kappa_M * P) ** n)
+            g = 1.0 if kappa_P == 0.0 else 1.0 / (1.0 + (kappa_P * P) ** n)
+            return (k_m * (1.0 + S) * f - d_m * M, k_p * M * g - d_p * P)
+
+        tt = np.asarray(t, dtype=float)
+        sol = solve_ivp(rhs, (float(tt[0]), float(tt[-1])), [m0, p0], t_eval=tt,
+                        method="LSODA", rtol=rtol, atol=atol)
+        return sol.y.T
+
+    return simulate
+
+
 def m2_oscillation_discriminant(*, theta, kappa_tilde_M, n_M=2.0, S_a=0.0):
     """Discriminant of the M2 Jacobian eigenvalues (Eq. 9): Delta = (theta - 1)^2 - 4 h1(p*).
 

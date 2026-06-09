@@ -13,7 +13,8 @@ how well, and from what measurements. The first target is the 2023 negative-auto
 
 ## State as of this brief
 
-- Phase 0 (scaffold) and Phase 1 (deterministic and stochastic) are done and pushed to `main`.
+- Phase 0 (scaffold), Phase 1 (deterministic and stochastic), and the Phase 2 structural
+  identifiability map are done and pushed to `main`. The Phase 2 practical sweep is partial.
 - The three target models (M1 simplistic, M2 transcriptional, M3 translational) are implemented in
   [`src/mechanistic_inference/models.py`](src/mechanistic_inference/models.py) as the paper's
   dimensionless system, with a closed-form M1 solution, a steady-state solver, and an oscillation
@@ -22,8 +23,12 @@ how well, and from what measurements. The first target is the 2023 negative-auto
   (writes figures and a summary to `results/`, which is gitignored).
 - Stochastic SSA: [`src/mechanistic_inference/stochastic.py`](src/mechanistic_inference/stochastic.py)
   with reproduction script `experiments/01_reproduce_autoregulation_models/reproduce_stochastic.py`.
-- Tests: 17 passing (6 identifiability, 8 model, 3 stochastic). Run with `python -m pytest tests/ -q`
-  (a venv with `requirements.txt` plus `pytest` is assumed; `conftest.py` puts `src/` on the path).
+- Phase 2 identifiability map: `make_dimensional_simulator` in `models.py` feeds the carried-over
+  Fisher/profile tooling; analysis and figure in `experiments/02_identifiability/identifiability_map.py`,
+  write-up in `experiments/02_identifiability/identifiability.md`.
+- Tests: 24 passing (6 baseline identifiability, 8 model, 3 stochastic, 7 Phase 2). Run with
+  `python -m pytest tests/ -q` (a venv with `requirements.txt` plus `pytest` is assumed; `conftest.py`
+  puts `src/` on the path).
 
 ## What is and is not established
 
@@ -53,8 +58,19 @@ What is not established, and why to be cautious:
 - M2 and M3 share the same protein steady state when `kappa_tilde_M = kappa_tilde_P` and `n_M = n_P`.
   This is a discrimination degeneracy in the protein-level observable.
 
-These two are hypotheses about where identifiability and discrimination will be hard. Phase 2 (Fisher
-rank and profile likelihood under each observation scheme) should confirm or revise them.
+These two are hypotheses about where identifiability and discrimination will be hard (the second is a
+discrimination question, Phase 4).
+
+## Phase 2 result so far
+
+Structural identifiability (Fisher rank) for the dimensional parameters: in all three models,
+protein-only observation leaves exactly one non-identifiable direction, the transcription/translation
+rate product (k_m vs k_p); the regulation strength kappa is identifiable; observing mRNA restores full
+rank. A hypothesis that transcriptional feedback would break the product degeneracy was refuted, both
+analytically (the scaling k_m c, k_p / c leaves the protein trajectory invariant) and via the Fisher
+null direction. Practical profiles on M3 agree (k_m flat under protein-only, bounded with mRNA; kappa_P
+bounded but weakly). The remaining Phase 2 work is a practical sweep over noise and sampling, and
+profiles for M2. See `experiments/02_identifiability/identifiability.md`.
 
 ## Data note
 

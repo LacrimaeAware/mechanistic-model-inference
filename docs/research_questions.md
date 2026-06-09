@@ -22,6 +22,14 @@ inference toolkit. These will grow and sharpen as the work proceeds.
   protein alone and identifiable when mRNA is observed. Do the regulation parameters introduce new
   non-identifiable combinations?
 
+Partial answer (Phase 2, experiment 02): structurally, no new combination appears. In all three models
+the single non-identifiable direction under protein-only observation is the transcription/translation
+rate product (k_m vs k_p); the regulation strength kappa is identifiable, and observing mRNA restores
+full rank. A hypothesis that transcriptional feedback would break the product degeneracy was refuted:
+the scaling k_m -> k_m c, k_p -> k_p / c leaves the protein trajectory invariant regardless of the
+feedback. Practically, kappa is identifiable but with a wide interval at 3% noise and 80 samples; a
+noise and sampling sweep is the open follow-up.
+
 ## Model discrimination
 
 - Can transcriptional and translational negative autoregulation be distinguished from time-course data
