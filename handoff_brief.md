@@ -81,15 +81,29 @@ draws for M3 kappa_P, 5/10 for M2 kappa_M), and both are clearly identifiable wi
 ## Phase 3 and Phase 4 (initial, need verification)
 
 - Phase 3 (`experiments/03_inference`): recovery on M3 (both channels recover all parameters;
-  protein-only recovers the k_m k_p product but not the split) and an MCMC posterior on M1 showing the
-  protein-only ridge (corr -0.93) that mRNA closes. A fourth route to the same degeneracy.
+  protein-only recovers the k_m k_p product but not the split) and MCMC posteriors. M1 MCMC is verified
+  converged (steps/tau = 138) and shows the protein-only ridge (corr -0.94) that mRNA closes: a fourth
+  route to the degeneracy. M3 MCMC does NOT fully converge for protein-only (the flat ridge is
+  diffusion-limited; see inference.md for the approaches tried and why each failed), so it is reported
+  preliminary with M1 as the anchor.
 - Phase 4 (`experiments/04_discrimination`): AIC/BIC. mRNA cannot separate M1 from M3; the joint
   mRNA+protein fit separates models a single channel cannot; M2 vs M3 is asymmetric (mRNA rejects M3
   when the data come from M2, but M2 can mimic M3). Large delta-AIC robust; small cells are single-
-  realization and need replication over noise draws.
-- These experiments are reproducible by running the scripts (results write to the gitignored `results/`);
-  no new unit tests were added for them, since the fits and MCMC are slow. The next verification step is
-  noise-draw replication of the borderline discrimination cells.
+  realization and their replication is blocked on fitting speed (below).
+- These experiments reproduce by running the scripts (results write to the gitignored `results/`); no
+  unit tests were added for them since the fits and MCMC are slow.
+
+## Known tooling debt (blocks the next round of experiments)
+
+- Fitting is slow and fragile at scale. `fit_mle` uses Nelder-Mead; fitting a wrong model or exploring
+  bad parameters sends individual `solve_ivp` calls on the stiff system into pathologically slow regions,
+  and there is no per-fit time bound. This made the discrimination replication impractical (one run
+  burned ~50 minutes of CPU). Any experiment needing hundreds of fits (replication, discriminability
+  maps, experimental-design sweeps, real-data fitting) is blocked until this is fixed.
+- Likely fixes: a bounded, gradient-aware optimizer (least-squares with parameter bounds), a wall-clock
+  or step cap per fit, the analytic M1 cascade where applicable, and tighter parameter priors/bounds.
+  Long-running scripts should flush per-iteration progress (now done in the replication script) so a run
+  can be monitored instead of buffering silently.
 
 ## Data note
 

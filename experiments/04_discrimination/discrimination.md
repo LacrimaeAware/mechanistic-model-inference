@@ -54,9 +54,16 @@ Scenario B, M2 vs M3 at symmetric feedback:
 
 ## Open items (backward verification needed)
 
-- The small delta-AIC cells (0.3 to 2.5) are single-realization and not quantitative. The next step is
-  to repeat each scenario over many noise draws and report the distribution of delta-AIC or a model-
-  selection error rate, so "weak discrimination" becomes a number rather than a one-shot verdict.
+- The small delta-AIC cells (0.3 to 2.5) are single-realization and not quantitative. Replicating them
+  over many noise draws (`experiments/04_discrimination/replicate_discrimination.py`) is the right check,
+  but it is currently BLOCKED on a tooling problem: fitting a wrong candidate model sends the
+  Nelder-Mead optimizer into stiff-ODE parameter regions where individual solver calls are pathologically
+  slow, so a full replication did not finish in a practical time (one attempt consumed ~50 minutes of
+  CPU before it was stopped). The script now flushes per-cell/per-draw progress so a run can be
+  monitored live. Before replication is reliable, the fitting needs per-fit time-bounding and/or a
+  faster bounded optimizer (see the tooling-debt note in `handoff_brief.md`). Until then the single-run
+  verdicts stand as preliminary: the large delta-AIC cells (> 20) are trustworthy; the small ones are
+  not yet quantified.
 - Feedback strength was fixed (1/kappa = 50 molecules). Discrimination should depend on it; a sweep over
   feedback strength (and over whether M2 is in its oscillatory regime) is untested.
 - AIC and BIC agreed on the winner in every cell here; BIC's larger penalty would matter mainly in the

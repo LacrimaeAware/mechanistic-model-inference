@@ -11,10 +11,12 @@ noise, and the shape of the Bayesian posterior.
 - Recovery (M3, dimensional parameters): for each noise level and observation scheme, fit 12 noisy
   realizations from a perturbed start and report the median absolute log-error per parameter, plus the
   k_m k_p product error and the k_m split error.
-- Posterior (M1, MCMC): sample the posterior with emcee (32 walkers, 4000 steps, 1000 discarded) using
+- Posterior (M1, MCMC): sample the posterior with emcee (32 walkers, 16000 steps, 5000 discarded) using
   the closed-form cascade so the sampling is fast and exact. Flat prior in log space, Gaussian
   likelihood with known sigma. Report the correlation of log k_m and log k_p and the spread along the
-  product direction (sum of logs) versus the ridge direction (difference of logs).
+  product direction (sum of logs) versus the ridge direction (difference of logs). Convergence is
+  checked by steps / autocorrelation time (138, well above the >50 rule of thumb; the metrics are stable
+  between 4000 and 16000 steps), so M1 is a trustworthy quantitative anchor.
 - Script: `experiments/03_inference/recovery_and_posterior.py` (writes `results/fig05_posterior_ridge.png`
   and `results/inference_summary.txt`).
 
@@ -60,10 +62,21 @@ degeneracy seen by Fisher rank and MLE recovery, now in the full posterior.
 - The recovery split error under protein-only is start-dependent (optimizer on a flat ridge); a cleaner
   metric is the posterior spread, already reported. Worth replacing the point-estimate metric with the
   posterior in a later pass.
-- MCMC was run on M1 (closed form) for speed. The regulated models should show the same ridge plus a
-  bounded kappa direction; running MCMC on M3 (ODE) is the natural confirmation, deferred for runtime.
-- Convergence was not formally diagnosed (no R-hat / autocorrelation report); the ridge-vs-blob
-  conclusion is qualitative and robust, but a quantitative posterior would need convergence checks.
+- MCMC on the regulated model M3 was attempted (`experiments/03_inference/mcmc_m3.py`) and does NOT
+  fully converge for the protein-only case in a practical budget. The non-identifiable direction makes
+  the posterior a wide, flat, prior-bounded valley, which ensemble samplers traverse only by slow
+  diffusion (autocorrelation time ~200-1200; steps/tau stays below the >50 threshold). Approaches tried
+  and why each did not help: rotating to (sum, difference) coordinates does nothing because emcee is
+  affine-invariant, so a linear reparameterization cannot change its mixing; a differential-evolution
+  move collapsed the acceptance rate; loosening the solver tolerance to afford more steps made the
+  likelihood noisy and raised the autocorrelation time. What is robust across all six M3 runs: a clear
+  ridge (negative correlation) and a kappa_P posterior much wider under protein-only (sd ~1.1-1.5) than
+  with mRNA (~0.5-0.9); the mRNA+protein case does converge to the expected round blob. M1 (converged)
+  is the quantitative anchor; M3 protein-only is reported as a qualitative, preliminary illustration. A
+  proper M3 posterior needs a sampler suited to flat ridges (nested sampling) or marginalizing the
+  degenerate direction analytically. This is a limitation of the sampling, not of the conclusion: the
+  degeneracy is already established by the analytic symmetry, Fisher rank, MLE recovery, and the
+  converged M1 posterior.
 
 ## Notes
 
