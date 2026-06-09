@@ -25,11 +25,13 @@ Deterministic reproduction done. The three dimensionless models (Eqs. 4-7) are i
 PDF pages (the equations are not committed; the manuscript stays in `data/raw`, gitignored). Two
 ambiguities in the extracted text were resolved by reading the PDF: the Hill term is `1/(1+(kappa P)^n)`
 (Eq. 3), and the input signal scales transcription multiplicatively as `(1+S_a) F(p)` (S_a in [1,4] is
-a 2- to 5-fold increase, p. 15-16). The optional Gillespie stochastic reproduction is not done.
+a 2- to 5-fold increase, p. 15-16). The optional Gillespie stochastic reproduction is also done.
 
-Regenerate with `python experiments/01_reproduce_autoregulation_models/reproduce.py` (writes
-`results/fig01_oscillation.png`, `results/fig02_response_speed.png`, `results/reproduce_01_summary.txt`).
-Correctness is also covered by `tests/test_models.py` (8 tests; full suite 14 passing).
+Regenerate the deterministic results with `python experiments/01_reproduce_autoregulation_models/reproduce.py`
+(writes `results/fig01_oscillation.png`, `results/fig02_response_speed.png`,
+`results/reproduce_01_summary.txt`) and the stochastic results with `reproduce_stochastic.py` (writes
+`results/fig03_stochastic_cv.png`, `results/reproduce_01_stochastic_summary.txt`). Correctness is
+covered by `tests/test_models.py` and `tests/test_stochastic.py` (full suite 17 passing).
 
 ## Results (regenerated)
 
@@ -45,12 +47,18 @@ Correctness is also covered by `tests/test_models.py` (8 tests; full suite 14 pa
   the step (max diff 6.2e-9), so mRNA cannot separate M1 from M3; and M2 and M3 share the same protein
   steady state under symmetric feedback (kappa_tilde_M=kappa_tilde_P, n_M=n_P), a discrimination
   degeneracy in the protein-level observable.
+- Stochastic noise ordering reproduced (exact SSA, 300 runs, 1/kappa=300 molecules, S_a=0): protein
+  CV M2=0.153 > M1=0.141 > M3=0.091 (paper: 0.16, 0.14, 0.10); mRNA CV M2=0.96 > M1=0.60 ~ M3=0.58
+  (paper: 0.89, 0.56, 0.56). The ordering and the protein CVs match within ensemble noise. Caveat:
+  the Hill-in-propensity formulation is a modeling choice the paper does not write out, so the exact
+  CVs are not claimed identical to theirs; M2 mRNA CV runs somewhat higher than reported.
 
 ## Open items before Phase 2
 
 - A few equation details were confirmed visually but the Jacobian/eigenvalue algebra (Eq. 9, h1/h2,
   pp. 10-12) was used only as an oscillation check, not re-derived; revisit if needed.
-- Optional Gillespie stochastic reproduction (noise ordering M2 > M1 > M3) is deferred.
+- The stochastic propensity formulation for the Hill repression is one of several plausible choices;
+  an alternative (promoter-state or occupancy-based) could shift the CV values.
 
 ## Notes
 

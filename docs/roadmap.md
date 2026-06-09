@@ -19,7 +19,9 @@ docs/goals.md.
   oscillation in the transcriptional model. Done: reproduced in
   `experiments/01_reproduce_autoregulation_models` (Figs. 4-5 ordering; M1 matches the Eq. 8 closed
   form to 3e-8).
-- Optional: reproduce the stochastic-noise ordering with a Gillespie simulation. Deferred.
+- Optional: reproduce the stochastic-noise ordering with a Gillespie simulation. Done: exact SSA in
+  `mechanistic_inference.stochastic` reproduces the protein-CV ordering M2 > M1 > M3
+  (`reproduce_stochastic.py`).
 - Deliverable: a script and note that regenerate the paper's figures from the equations. Done.
 
 ## Phase 2: identifiability
@@ -62,10 +64,11 @@ docs/goals.md.
 - Identifiability pipeline built and validated on the textbook mRNA-to-protein model: observing
   protein only, transcription and translation rates are non-identifiable (Fisher rank 3 of 4);
   observing mRNA as well makes them identifiable (rank 4 of 4). See `tests/test_identifiability.py`.
-- Phase 1 deterministic reproduction done: the three target models are in
-  `mechanistic_inference.models`, the paper's deterministic behavior is reproduced
-  (`experiments/01_reproduce_autoregulation_models`), and the full suite is 14 tests passing
-  (6 identifiability, 8 models). Two structural degeneracies were noted for Phase 2: mRNA cannot
-  separate M1 from M3, and M2/M3 protein steady states coincide under symmetric feedback.
+- Phase 1 done (deterministic and stochastic): the three target models are in
+  `mechanistic_inference.models`, the exact SSA in `mechanistic_inference.stochastic`, and the paper's
+  deterministic behavior and stochastic noise ordering are reproduced
+  (`experiments/01_reproduce_autoregulation_models`). Full suite is 17 tests passing (6 identifiability,
+  8 models, 3 stochastic). Two structural degeneracies were noted for Phase 2: mRNA cannot separate M1
+  from M3, and M2/M3 protein steady states coincide under symmetric feedback.
 - Next: Phase 2, Fisher rank and profile likelihood for each model under protein-only and
   mRNA-plus-protein observation.

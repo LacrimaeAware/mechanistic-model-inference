@@ -13,16 +13,17 @@ how well, and from what measurements. The first target is the 2023 negative-auto
 
 ## State as of this brief
 
-- Phase 0 (scaffold) and the deterministic part of Phase 1 are done and pushed to `main`.
+- Phase 0 (scaffold) and Phase 1 (deterministic and stochastic) are done and pushed to `main`.
 - The three target models (M1 simplistic, M2 transcriptional, M3 translational) are implemented in
   [`src/mechanistic_inference/models.py`](src/mechanistic_inference/models.py) as the paper's
   dimensionless system, with a closed-form M1 solution, a steady-state solver, and an oscillation
   discriminant.
 - Reproduction script: [`experiments/01_reproduce_autoregulation_models/reproduce.py`](experiments/01_reproduce_autoregulation_models/reproduce.py)
   (writes figures and a summary to `results/`, which is gitignored).
-- Tests: 14 passing (6 carried-over identifiability, 8 new model tests). Run with
-  `python -m pytest tests/ -q` (a venv with `requirements.txt` plus `pytest` is assumed; `conftest.py`
-  puts `src/` on the path).
+- Stochastic SSA: [`src/mechanistic_inference/stochastic.py`](src/mechanistic_inference/stochastic.py)
+  with reproduction script `experiments/01_reproduce_autoregulation_models/reproduce_stochastic.py`.
+- Tests: 17 passing (6 identifiability, 8 model, 3 stochastic). Run with `python -m pytest tests/ -q`
+  (a venv with `requirements.txt` plus `pytest` is assumed; `conftest.py` puts `src/` on the path).
 
 ## What is and is not established
 
@@ -40,9 +41,10 @@ What is not established, and why to be cautious:
 - Two equation details were judgment calls resolved by reading the rendered PDF: the Hill argument
   `(kappa P)^n` and the multiplicative signal entry `(1 + S_a) F(p)`. They are internally consistent
   and match the stated fold-change, but an independent reading could differ.
-- The stochastic (Gillespie) reproduction of the noise ordering is not done. The paper does not write
-  out the propensity formulation of the Hill-repression term, so whether the exact CV values reproduce
-  is open; the qualitative ordering (M2 noisiest, M3 least) is the testable target.
+- The stochastic (Gillespie) reproduction recovers the protein-CV ordering M2 > M1 > M3 and lands
+  within about 0.01-0.02 of the paper's protein CVs (0.16/0.14/0.10). The Hill-in-propensity
+  formulation is a modeling choice the paper does not write out, so the exact CVs are not claimed to
+  match its implementation; the M2 mRNA CV in particular runs higher than reported (about 0.96 vs 0.89).
 
 ## Two structural facts logged for later phases
 
