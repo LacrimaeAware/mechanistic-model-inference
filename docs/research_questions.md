@@ -37,6 +37,13 @@ noise and sampling sweep is the open follow-up.
 - Is there a regime where the two mechanisms are statistically indistinguishable despite producing
   different dynamics?
 
+Partial answer (Phase 4, experiment 04, initial): mRNA cannot separate M1 from M3 (identical mRNA
+dynamics; AIC picks the simpler M1). The joint mRNA+protein fit separates models where a single channel
+cannot. M2 vs M3 discrimination is asymmetric: the mRNA channel rejects M3 strongly when the data come
+from M2 (only M2 regulates mRNA), but M2 can mimic M3 when the data come from M3, so a single channel
+does not reject M2 there. Large delta-AIC results are robust; the borderline cells (delta-AIC < 3) are
+single-realization and need replication over noise draws before they count as answers.
+
 ## Experimental design
 
 - Which single added measurement (observing mRNA, finer time resolution, a changed input step) most

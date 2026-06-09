@@ -35,17 +35,27 @@ docs/goals.md.
 - Deliverable: an identifiability map per model. Done (structural); a noise and sampling sweep for the
   practical map is the remaining piece.
 
-## Phase 3: inference under noise
+## Phase 3: inference under noise (initial experiments done; verification pending)
 
 - Maximum-likelihood fitting on simulated noisy data; recovery as a function of noise and sampling.
-- Then Bayesian / MCMC (for example emcee) for posterior uncertainty on the identifiable parameters.
-- Deliverable: recovery and uncertainty results, honest about what cannot be recovered.
+  Done for M3 (`experiments/03_inference`): both channels recover all parameters; protein-only recovers
+  the k_m k_p product but not the split.
+- Then Bayesian / MCMC (emcee) for posterior uncertainty. Done for M1: the protein-only posterior is a
+  ridge along log k_m + log k_p = const (correlation -0.93); observing mRNA closes it into a bounded
+  blob. MCMC on the regulated models and formal convergence diagnostics are deferred.
+- Deliverable: recovery and uncertainty results, honest about what cannot be recovered. Initial version
+  done; a sampling-density sweep and M3 MCMC remain.
 
-## Phase 4: model discrimination and experimental design
+## Phase 4: model discrimination and experimental design (initial experiments done; verification pending)
 
-- Whether transcriptional and translational negative autoregulation can be told apart from data
-  (likelihood ratio, information criteria), and under what measurement scheme.
+- Whether the autoregulation modes can be told apart from data (AIC/BIC), and under what measurement
+  scheme. Initial experiments (`experiments/04_discrimination`): mRNA cannot separate M1 from M3; the
+  joint mRNA+protein fit separates models where a single channel cannot; M2 vs M3 discrimination is
+  asymmetric (mRNA rejects M3 when the truth is M2, but M2 can mimic M3). Large delta-AIC results are
+  robust; small ones need replication over noise draws.
 - Optimal experimental design: which added measurement most improves identifiability or discrimination.
+  The results already point at observing mRNA as the high-value measurement; a systematic design metric
+  is not yet computed.
 
 ## Phase 5: extensions
 
@@ -77,5 +87,9 @@ docs/goals.md.
 - Phase 2 structural map done: in all three models the only protein-only non-identifiable direction is
   the k_m vs k_p product; kappa is identifiable; mRNA restores full rank (`experiments/02_identifiability`,
   24 tests passing). A hypothesis that transcriptional feedback breaks the degeneracy was refuted.
-- Next: the practical identifiability sweep (noise and sampling) to finish Phase 2, then Phase 3
-  (maximum-likelihood recovery, then Bayesian / MCMC).
+- Phase 2 finished (M2 and M3 practical profiles done). Phase 3 and Phase 4 have initial experiments:
+  recovery and an MCMC posterior ridge (Phase 3), and AIC/BIC discrimination (Phase 4). These are
+  exploratory and partly need backward verification (noise-draw replication for the borderline
+  discrimination cells; M3 MCMC; a feedback-strength sweep).
+- Next: replicate the borderline discrimination results over noise draws, add an optimal-measurement
+  metric, and tighten the practical claims.

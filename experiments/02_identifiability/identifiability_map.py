@@ -74,43 +74,70 @@ def main():
     record("degeneracy.")
     record("")
 
-    # --- Practical identifiability (profile likelihood) on M3, normalized observations ---
-    record("PRACTICAL IDENTIFIABILITY (profile likelihood, M3 translational, 3% relative noise)")
+    # --- Practical identifiability (profile likelihood) for both regulated models ---
+    record("PRACTICAL IDENTIFIABILITY (profile likelihood, 3% relative noise)")
     record("=" * 64)
-    model = "M3"
-    sim = M.make_dimensional_simulator(model)
-    th = TRUE[model]
-    clean = sim(th, T)
-    scale = np.array([clean[:, 0].max(), clean[:, 1].max()])  # per-channel normalization
 
-    def sim_norm(theta, t):
-        return M.make_dimensional_simulator(model)(theta, t) / scale
+    def make_sim_norm(model, scale):
+        base = M.make_dimensional_simulator(model)
+        return lambda theta, t: base(theta, t) / scale
 
+    fig, axes = plt.subplots(2, 2, figsize=(9, 7))
     sigma = 0.03
-    rng = np.random.default_rng(0)
-
-    fig, axes = plt.subplots(1, 2, figsize=(9, 4))
-    panels = [("k_m", 0), ("kappa_P", 4)]
-    for ax, (pname, pidx) in zip(axes, panels):
-        for ch, lbl in SCHEMES:
-            data = (clean / scale)[:, list(ch)].ravel()
-            data = data + rng.normal(scale=sigma, size=data.size)
-            mle = fit_mle(T, data, ch, sigma, th + 0.1, simulate=sim_norm, maxiter=600)
-            grid, nll = profile_likelihood(pidx, mle, T, data, ch, sigma, simulate=sim_norm,
-                                           span=2.0, n=11, maxiter=400)
-            ident = is_identifiable(nll)
-            record(f"  {pname:8s} under {lbl:12s}: {'identifiable' if ident else 'NON-identifiable (flat)'}")
-            ax.plot(grid - mle[pidx], nll - nll.min(), marker="o", ms=3, label=f"{lbl} ({'id' if ident else 'flat'})")
-        ax.axhline(1.92, color="k", lw=0.8, ls=":")  # 95% threshold for one parameter
-        ax.set_title(f"profile: {pname}")
-        ax.set_xlabel(r"$\log$ parameter offset from MLE")
-        ax.set_ylabel(r"$\Delta$ negative log-likelihood")
-        ax.legend(fontsize=8)
-    fig.suptitle("M3 practical identifiability: k_m flat under protein-only, bounded with mRNA; kappa_P bounded")
+    for row, (model, kname) in enumerate([("M2", "kappa_M"), ("M3", "kappa_P")]):
+        sim = M.make_dimensional_simulator(model)
+        th = TRUE[model]
+        clean = sim(th, T)
+        scale = np.array([clean[:, 0].max(), clean[:, 1].max()])  # per-channel normalization
+        sim_norm = make_sim_norm(model, scale)
+        rng = np.random.default_rng(0)
+        for col, (pname, pidx) in enumerate([("k_m", 0), (kname, 4)]):
+            ax = axes[row, col]
+            for ch, lbl in SCHEMES:
+                data = (clean / scale)[:, list(ch)].ravel()
+                data = data + rng.normal(scale=sigma, size=data.size)
+                mle = fit_mle(T, data, ch, sigma, th + 0.1, simulate=sim_norm, maxiter=600)
+                # span must exceed the confidence-interval half-width or a genuinely identifiable but
+                # weakly constrained parameter (e.g. M2 kappa_M) reads as a false "flat"; 3.0 log units
+                # (a ~20x factor each way) is wide enough here.
+                grid, nll = profile_likelihood(pidx, mle, T, data, ch, sigma, simulate=sim_norm,
+                                               span=3.0, n=15, maxiter=400)
+                ident = is_identifiable(nll)
+                record(f"  {model} {pname:8s} under {lbl:12s}: "
+                       f"{'identifiable' if ident else 'NON-identifiable (flat)'}")
+                ax.plot(grid - mle[pidx], nll - nll.min(), marker="o", ms=3,
+                        label=f"{lbl} ({'id' if ident else 'flat'})")
+            ax.axhline(1.92, color="k", lw=0.8, ls=":")  # 95% threshold for one parameter
+            ax.set_yscale("symlog", linthresh=2.0)  # linear near the threshold, log for the steep arms
+            ax.set_title(f"{model}: profile {pname}")
+            ax.set_xlabel(r"$\log$ offset from MLE")
+            ax.set_ylabel(r"$\Delta$ neg-log-likelihood")
+            ax.legend(fontsize=7)
+    fig.suptitle("Practical identifiability: k_m flat under protein-only, bounded with mRNA; kappa bounded")
     fig.tight_layout()
     f = os.path.join(RESULTS, "fig04_profile_likelihood.png")
     fig.savefig(f, dpi=140)
     record(f"wrote {os.path.relpath(f)}")
+
+    # kappa under protein-only is near the identifiable/flat boundary; a single profile is not a stable
+    # verdict, so quantify it over noise draws.
+    record("")
+    record("kappa robustness under protein-only over 10 noise draws (3% noise):")
+    for model, kidx, kname in [("M2", 4, "kappa_M"), ("M3", 4, "kappa_P")]:
+        base = M.make_dimensional_simulator(model)
+        th = TRUE[model]
+        clean = base(th, T)
+        scale = np.array([clean[:, 0].max(), clean[:, 1].max()])
+        sim_norm = make_sim_norm(model, scale)
+        cnt = 0
+        for seed in range(10):
+            rng = np.random.default_rng(seed)
+            data = (clean / scale)[:, [1]].ravel() + rng.normal(scale=0.03, size=T.size)
+            mle = fit_mle(T, data, (1,), 0.03, th + 0.1, simulate=sim_norm, maxiter=800)
+            _, nll = profile_likelihood(kidx, mle, T, data, (1,), 0.03, simulate=sim_norm,
+                                        span=3.0, n=15, maxiter=400)
+            cnt += int(is_identifiable(nll))
+        record(f"  {model} {kname} (protein-only): identifiable in {cnt}/10 draws (marginal)")
 
     out = os.path.join(RESULTS, "identifiability_map_summary.txt")
     with open(out, "w", encoding="utf-8") as fh:

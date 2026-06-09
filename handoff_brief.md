@@ -13,8 +13,9 @@ how well, and from what measurements. The first target is the 2023 negative-auto
 
 ## State as of this brief
 
-- Phase 0 (scaffold), Phase 1 (deterministic and stochastic), and the Phase 2 structural
-  identifiability map are done and pushed to `main`. The Phase 2 practical sweep is partial.
+- Phase 0 (scaffold), Phase 1 (deterministic and stochastic), and Phase 2 (structural map and practical
+  profiles for M2 and M3) are done and pushed to `main`. Phase 3 (recovery + MCMC posterior) and Phase 4
+  (AIC/BIC discrimination) have initial experiments that still need backward verification.
 - The three target models (M1 simplistic, M2 transcriptional, M3 translational) are implemented in
   [`src/mechanistic_inference/models.py`](src/mechanistic_inference/models.py) as the paper's
   dimensionless system, with a closed-form M1 solution, a steady-state solver, and an oscillation
@@ -72,8 +73,23 @@ null direction. Practical profiles on M3 agree (k_m flat under protein-only, bou
 bounded but weakly). A methodology audit (`verify_methodology.py`) corroborates the structural result
 three independent ways (analytic scaling symmetry, Fisher rank, MLE recovery) and shows a noise sweep
 where k_m stays non-identifiable at every noise level while kappa crosses identifiable -> not as noise
-grows (protein-only between 1-3%, mRNA+protein between 3-10%). The remaining Phase 2 work is M2
-practical profiles. See `experiments/02_identifiability/identifiability.md`.
+grows (protein-only between 1-3%, mRNA+protein between 3-10%). Practical profiles are done for both M2
+and M3; under protein-only kappa is only marginally identifiable for both (identifiable in 6/10 of noise
+draws for M3 kappa_P, 5/10 for M2 kappa_M), and both are clearly identifiable with mRNA. See
+`experiments/02_identifiability/identifiability.md`.
+
+## Phase 3 and Phase 4 (initial, need verification)
+
+- Phase 3 (`experiments/03_inference`): recovery on M3 (both channels recover all parameters;
+  protein-only recovers the k_m k_p product but not the split) and an MCMC posterior on M1 showing the
+  protein-only ridge (corr -0.93) that mRNA closes. A fourth route to the same degeneracy.
+- Phase 4 (`experiments/04_discrimination`): AIC/BIC. mRNA cannot separate M1 from M3; the joint
+  mRNA+protein fit separates models a single channel cannot; M2 vs M3 is asymmetric (mRNA rejects M3
+  when the data come from M2, but M2 can mimic M3). Large delta-AIC robust; small cells are single-
+  realization and need replication over noise draws.
+- These experiments are reproducible by running the scripts (results write to the gitignored `results/`);
+  no new unit tests were added for them, since the fits and MCMC are slow. The next verification step is
+  noise-draw replication of the borderline discrimination cells.
 
 ## Data note
 

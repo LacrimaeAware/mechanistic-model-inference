@@ -40,10 +40,18 @@ trajectory by c and leaves the protein equation (k_p M) unchanged, so the protei
 identical. This holds for the regulated models too, because the scaling does not touch the Hill term.
 The test `test_rate_product_degeneracy_leaves_protein_invariant` checks this directly.
 
-Practical map (M3, 3% noise): k_m is flat (non-identifiable) under protein-only and bounded once mRNA
-is observed; kappa_P is bounded under both schemes, but the profile is shallow, so its confidence
-interval is wide. The structural verdict (kappa identifiable) and the practical verdict (kappa
-identifiable but weakly constrained) agree in direction and differ in strength.
+Practical map (M2 and M3, 3% noise): k_m is robustly flat (non-identifiable) under protein-only and
+bounded once mRNA is observed, in both models; kappa is robustly bounded with mRNA in both. Under
+protein-only, kappa is only weakly constrained in both models: the profiles are shallow and sit near
+the identifiable/flat boundary, so the verdict is realization-dependent. Over 10 noise draws the profile
+reads identifiable in 6/10 for M3 kappa_P and 5/10 for M2 kappa_M (both near a coin flip), so neither is
+robustly identifiable from protein alone at 3% noise, with M3 slightly ahead. The ordering fits the
+expectation that translational regulation marks the protein directly
+while transcriptional regulation reaches it only through the mRNA it controls, but the protein-only
+kappa verdict should be treated as marginal for both, not a clean identifiable/non-identifiable split.
+A first scan read M2 kappa_M as flat; that was traced partly to a too-narrow profile window and partly
+to this realization-dependence, not to a structural non-identifiability (the Fisher rank has kappa
+identifiable in both models).
 
 ## Hypotheses, with evidence for and against
 
@@ -53,9 +61,12 @@ identifiable but weakly constrained) agree in direction and differ in strength.
   protein back into mRNA production. Evidence for: f(P) makes mRNA production depend on P and kappa_M.
   Evidence against (decisive): the scaling k_m c, k_p / c leaves the protein trajectory invariant
   regardless of f(P), and the Fisher null direction is still the k_m vs k_p product. Status: refuted.
-- kappa is identifiable from protein alone. Evidence for: full Fisher rank in that coordinate and a
-  bounded profile. Caveat: the kappa_P profile is shallow at 3% noise and 80 samples, so the interval
-  is wide. Status: supported structurally, weak practically.
+- kappa is identifiable from protein alone. Evidence for: full Fisher rank in that coordinate.
+  Practically split: M3 kappa_P is practically identifiable from protein, but M2 kappa_M is only
+  marginal (the protein-only profile verdict is realization-dependent at 3% noise). Status: structurally
+  yes for both; practically yes for M3, marginal for M2. The difference fits the intuition that
+  translational regulation marks the protein directly while transcriptional regulation does so only
+  through the mRNA it controls.
 
 ## Methodology audit
 
