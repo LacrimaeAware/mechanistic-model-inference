@@ -122,6 +122,40 @@ def steady_state(*, theta, kappa_tilde_M=0.0, kappa_tilde_P=0.0, n_M=2.0, n_P=2.
     return m_star, p_star
 
 
+def _translation_signal(amplitude, delta, gamma, t0, offset, t):
+    """Closed-form GFP signal of the mRNA-bolus translation model (Frohlich/Leonhardt), for experiment 05.
+
+    For t >= t0 (tau = t - t0): GFP(tau) = amplitude/(gamma - delta) * (exp(-delta tau) - exp(-gamma tau)),
+    observed as amplitude*... + offset; before t0 the signal is the baseline offset. ``amplitude`` is the
+    lumped scale*k*m0 (see the two simulators below).
+    """
+    t = np.asarray(t, dtype=float)
+    tau = np.maximum(t - t0, 0.0)
+    if abs(gamma - delta) < 1e-9:
+        g = tau * np.exp(-delta * tau)                     # limit as gamma -> delta
+    else:
+        g = (np.exp(-delta * tau) - np.exp(-gamma * tau)) / (gamma - delta)
+    y = amplitude * g + offset
+    return np.where(t < t0, offset, y)
+
+
+def simulate_translation(theta, t):
+    """Translation model in the IDENTIFIABLE parameterization. theta = log[amplitude, delta, gamma, t0,
+    offset]; returns shape (len(t), 1) (GFP is the single observable). ``amplitude`` is the lumped
+    scale*k*m0 (only this product is identifiable from GFP alone)."""
+    amplitude, delta, gamma, t0, offset = np.exp(np.asarray(theta, dtype=float))
+    return _translation_signal(amplitude, delta, gamma, t0, offset, t).reshape(-1, 1)
+
+
+def simulate_translation_full(theta, t):
+    """Translation model in the SEPARATED parameterization, for the identifiability demonstration.
+    theta = log[scale, k, m0, delta, gamma, t0, offset]; amplitude = scale*k*m0. The three factors scale,
+    k, m0 enter only through their product, so two of their directions are non-identifiable from GFP
+    alone (the published result). Returns shape (len(t), 1)."""
+    scale, k, m0, delta, gamma, t0, offset = np.exp(np.asarray(theta, dtype=float))
+    return _translation_signal(scale * k * m0, delta, gamma, t0, offset, t).reshape(-1, 1)
+
+
 def make_dimensional_simulator(model="M1", *, n=2.0, S=0.0, m0=0.0, p0=0.0,
                                rtol=1e-8, atol=1e-10):
     """Build a ``simulate(theta, t) -> (len(t), 2)`` closure for the identifiability tooling.

@@ -64,7 +64,10 @@ start violated that floor in 5 of 60 draws (one start) or 42 of 60 (a different 
 **multi-start over kappa** (several kappa values plus the simpler model's fit), taking the global best;
 that brings floor violations to ~0 and makes the AIC comparison reflect the real optimum.
 
-Multi-start results (the trustworthy ones; "select rate" = fraction of draws the true model wins on AIC):
+Multi-start results ("select rate" = fraction of draws the true model wins on AIC). These pass the
+nesting-floor check and agree between the controlled script and the replication, but that is NOT a
+certification: other errors (in the likelihood, the AIC bookkeeping, the model code, or the fitting) may
+remain. Treat every number here as PROVISIONAL pending an independent re-verification pass.
 
 | comparison              | channel       | true-model select rate | verdict            |
 | ----------------------- | ------------- | ---------------------- | ------------------ |

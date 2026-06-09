@@ -50,10 +50,34 @@ translation kinetics after mRNA transfection," PMC9110294).
 4. Deliverable: a figure of the fit over the data and an identifiability statement for the real model,
    stated as a comparison to the published benchmark.
 
+## Results (provisional, first pass, NOT independently re-verified)
+
+Implemented `simulate_translation` (identifiable form) and `simulate_translation_full` (separated form)
+in `mechanistic_inference.models`, and fit the mean trace with multi-start
+(`experiments/05_real_data/fit_translation.py`).
+
+- Fit: the model matches the real mean GFP curve well, residual sd 35 a.u. = 1.4% of the peak
+  (`fig09_translation_fit.png`). Fitted values: amplitude 540, the two decay rates 0.021/h and 0.165/h
+  (only the unordered pair is identifiable; the labels delta vs gamma are not, a known symmetry of this
+  model), onset t0 = 1.22 h, offset 62. One honest blemish: the sharp onset-delay model rises a little
+  too abruptly around 1-2 h versus the smooth real onset; a maturation/onset refinement is the likely fix.
+- Identifiability: the Fisher rank of the separated 7-parameter model (scale, k, m0, delta, gamma, t0,
+  offset) is 5 of 7. Both null directions lie entirely in the scale/k/m0 block and span the subspace
+  orthogonal to (1, 1, 1) there, so the product scale*k*m0 is identifiable but the three factors are not
+  separable. This matches the published structural result (Pieschner et al. 2022): from GFP alone only
+  the amplitude product is recoverable. The pipeline found that degeneracy on real data.
+
+Caveats (why this is provisional): the fit is to the population MEAN, not single cells or a mixed-effects
+model as in the source analysis; the delta/gamma label symmetry is not resolved; only Fisher (structural)
+identifiability was checked, not profile likelihood (practical) or the published reparameterization; one
+noise model; and none of this has had an independent re-verification pass. Treat every number as a first
+pass that can contain errors of the kind found elsewhere in this project.
+
 ## Status
 
-Data downloaded, loaded, and visualized (this note; `load_and_inspect.py`; `fig07_frohlich_data.png`).
-The model and the fit are not yet implemented. This is the immediate next step.
+Data loaded and visualized; model implemented; first fit and a structural-identifiability check done
+(above), all provisional. Next: profile likelihood on the real fit, single-cell fits, resolving the
+delta/gamma symmetry, and an independent re-verification of this whole experiment.
 
 ## Notes
 

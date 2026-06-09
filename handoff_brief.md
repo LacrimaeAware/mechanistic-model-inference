@@ -27,9 +27,22 @@ how well, and from what measurements. The first target is the 2023 negative-auto
 - Phase 2 identifiability map: `make_dimensional_simulator` in `models.py` feeds the carried-over
   Fisher/profile tooling; analysis and figure in `experiments/02_identifiability/identifiability_map.py`,
   write-up in `experiments/02_identifiability/identifiability.md`.
-- Tests: 25 passing (6 baseline identifiability, 8 model, 3 stochastic, 8 Phase 2). Run with
+- Tests: 29 passing (6 baseline identifiability, 8 model, 3 stochastic, 8 Phase 2, 4 fitting). Run with
   `python -m pytest tests/ -q` (a venv with `requirements.txt` plus `pytest` is assumed; `conftest.py`
   puts `src/` on the path).
+
+## Verification status (read first)
+
+Results here are PROVISIONAL, not certified. Phase 1-2 have correctness tests and analytic cross-checks
+and are on firm ground. Phase 3-4 (inference, discrimination) have passed specific checks but a full
+independent re-verification is owed and has not been done. A real bug was already found and fixed late
+(single-start fits getting stuck near kappa = 0, which contaminated the discrimination numbers and
+changed a conclusion); assume more of that kind exist. Known recurring failure modes to guard against:
+optimizer initialization sensitivity (use multi-start; check the nesting floor delta-AIC >= -2),
+conflated settings between runs (hold grid, fitter, noise fixed when comparing), and stating
+single-realization results as conclusions (report distributions/rates, not one fit). Do not describe any
+inference or discrimination result as "trustworthy" or "settled" until it has been re-derived
+independently.
 
 ## What is and is not established
 

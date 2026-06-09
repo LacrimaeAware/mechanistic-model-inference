@@ -37,6 +37,11 @@ established these through repeated correction; they are not optional polish.
   usually partial; saying how partial it is, is the point.
 - When proposing work, name the problem first, then the candidate approaches, then why each is or is
   not promising. Prioritize among them rather than presenting one option as the answer.
+- A result is provisional until independently re-verified. Passing one's own checks is not
+  certification. Do not call results "trustworthy", "settled", "verified", or "definitive" on the basis
+  of self-checks alone; say which specific checks were run and that other errors may remain. Keep a
+  running list of what has and has not been re-verified, and assume bugs of the kind already found
+  (optimizer initialization, conflated settings, single-realization claims) can recur.
 
 ## Privacy (this repo is public-facing)
 
